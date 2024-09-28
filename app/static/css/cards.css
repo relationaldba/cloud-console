@@ -1,0 +1,109 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.card:hover {
+  cursor: pointer;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.4);
+  transform: scale(1.03);
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.card-footer {
+  display: flex;
+  gap: 2rem;
+  justify-content: flex-end;
+  padding: 0.25rem;
+}
+
+
+
+/* .card-button {
+  width: 100%;
+  padding: 0rem;
+  border-width: 0;
+  margin-top: 0rem;
+} */
+
+.card-body .card-icon {
+  font-size: 1.25rem;
+}
+
+.card-footer .card-icon {
+  font-size: 1.25rem;
+}
+.card-footer button {
+  width: 100%;
+  /* padding: 0.25rem; */
+}
+
+
+
+.card-generic {
+  width: 300px;
+  height: 300px;
+}
+
+.card-services {
+  width: 275px;
+  height: 150px;
+}
+
+.card-stacks {
+  width: 275px;
+  height: 150px;
+}
+
+.card-deployments {
+  width: 275px;
+  height: 150px;
+}
+
+
+/***** Product Card ******/
+
+.card-products {
+  width: 200px;
+  height: 100px;
+}
+
+.card-add-products {
+  background-color: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+}
+
+.card-add-products h4,
+.card-add-products i {
+  color: var(--pico-primary-inverse);
+  margin: 0px;
+}
+
+
+.card-add-products .card-body {
+  align-items: center;
+}
+.card-add-products .card-body i {
+  font-size: 2rem;
+}
+
+
+
+/***** Animations ******/
+.card-products.htmx-swapping {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}

@@ -1,0 +1,67 @@
+/* [data-theme="light"],
+:root:not([data-theme="dark"]) {
+  --pico-input-bg: var(--pico-color-slate-50);
+  --pico-input-border: var(--pico-color-slate-50);
+  --pico-input-border-focus: var(--pico-primary);
+  --pico-input-color: var(--pico-color-slate-650);
+  --pico-input-color-focus: var(--pico-color-slate-950);
+  --pico-input-placeholder-color: var(--pico-color-slate-400);
+}
+
+[data-theme="dark"],
+:root:not([data-theme="light"]) {
+  --pico-input-bg: var(--pico-color-slate-800);
+  --pico-input-border: var(--pico-color-slate-800);
+  --pico-input-border-focus: var(--pico-primary);
+  --pico-input-color: var(--pico-color-slate-250);
+  --pico-input-color-focus: var(--pico-color-slate-50);
+  --pico-input-placeholder-color: var(--pico-color-slate-600);
+} */
+
+
+input.inline-editable {
+  border: none;
+  border-bottom: 1px solid var(--pico-input-border);
+  border-radius: 0rem;
+  background-color: transparent;
+  font-size: 1.25rem;
+  /* font-weight: 400; */
+  height: 2.5rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 0;
+  padding-inline-start: 0 !important;
+  /* transition: border-color 0.15s ease-in; */
+}
+input.inline-editable::placeholder {
+  font-size: 1rem;
+  color: var(--pico-input-color);
+}
+
+input.inline-editable[aria-invalid] {
+  padding: 0;
+  padding-inline-start: 0 !important;
+  color: var(--pico-input-color);
+}
+
+input.inline-editable:hover {
+  /* styles applied when the input field is focused */
+
+  /* border: 1px solid var(--pico-input-border); */
+  /* transition: border-color 0.15s ease-in; */
+  border-radius: 0.25rem;
+  background-color: var(--pico-input-bg);
+  color: var(--pico-input-color);
+}
+
+input.inline-editable:focus {
+  /* styles applied when the input field is focused */
+  /* border-color: var(--pico-primary-border); */
+  /* transition: border-color 0.15s ease-in; */
+  /* border: 1px solid var(--pico-primary-border); */
+  border-radius: 0.25rem;
+  background-color: var(--pico-input-bg);
+  border: 1px solid var(--pico-input-border);
+  color: var(--pico-input-color-focus);
+}

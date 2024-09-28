@@ -1,0 +1,24 @@
+<div class="modal" open="" _="on closeModal add .closing then wait for animationend then remove me">
+  <div class="modal-underlay" _="on click trigger closeModal"></div>
+  <article class="modal-content">
+    <i class="bi bi-x-square modal-icon" _="on click trigger closeModal"></i>
+    <h4>Sorry, you do not have access to this resource! (403)</h4>
+    <p>We are sorry, you don't have access to this resource. Please verify if you are authorized to access it or contact support to request access.</p>
+    <br />
+    <details>
+      <summary>Details:</summary>
+      <small>
+        Status Code: {{ exception.status_code }}<br />
+        Error Code: {{ exception.detail.error_code }}<br />
+        Module: {{ exception.detail.module }}<br />
+        Detail: {{ exception.detail.message }}<br />
+        Route: {{ request.scope.route }}<br />
+        Path: {{ request.scope.path }}<br />
+        Path Params: {{ request.scope.path_params }}<br />
+      </small>
+    </details>
+    <footer>
+      <button class="Secondary" _="on click trigger closeModal">Close</button>
+    </footer>
+  </article>
+</div>

@@ -1,0 +1,25 @@
+<div class="modal" open="" _="on closeModal add .closing then wait for animationend then remove me">
+  <div class="modal-underlay" _="on click trigger closeModal"></div>
+  <article class="modal-content">
+    <i class="bi bi-x-square modal-icon" _="on click trigger closeModal"></i>
+    <h4>SignIn to continue</h4>
+    <p>Looks like your session has expired or you are not signed in. Please sign in to continue.</p>
+    <br />
+    <details>
+      <summary>Details:</summary>
+      <small>
+        Status Code: {{ exception.status_code }}<br />
+        Error Code: {{ exception.detail.error_code }}<br />
+        Module: {{ exception.detail.module }}<br />
+        Detail: {{ exception.detail.message }}<br />
+        Route: {{ request.scope.route }}<br />
+        Path: {{ request.scope.path }}<br />
+        Path Params: {{ request.scope.path_params }}<br />
+      </small>
+    </details>
+    <footer>
+      <button class="Secondary" _="on click trigger closeModal">Close</button>
+      <button class="Primary" _="on click redirect to /login">Sign In</button>
+    </footer>
+  </article>
+</div>

@@ -1,0 +1,20 @@
+<div class="modal" open="" _="on closeModal add .closing then wait for animationend then remove me">
+  <div class="modal-underlay" _="on click trigger closeModal"></div>
+  <article class="modal-content">
+    <i class="bi bi-x-square modal-icon" _="on click trigger closeModal"></i>
+    <h4>Oops, an error occurred!</h4>
+    <p>We ran into an error while processing your request. Please try again later or contact support if the problem persists.</p>
+    <br />
+    <details>
+      <summary>Details:</summary>
+      <small>
+        Route: {{ request.scope.route }}<br />
+        Path: {{ request.scope.path }}<br />
+        Path Params: {{ request.scope.path_params }}<br />
+      </small>
+    </details>
+    <footer>
+      <button class="Secondary" _="on click trigger closeModal">Close</button>
+    </footer>
+  </article>
+</div>

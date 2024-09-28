@@ -1,0 +1,17 @@
+<article
+  class="card card-products"
+  id='{{ "card-products-" ~ product.id }}'
+  hx-get='{{ "/products/" ~ product.id }}'
+  hx-target="body"
+  hx-swap="beforeend">
+  <div class="card-content">
+    <div class="card-body">
+      <h4>{{ product.name }}</h4>
+      <small>{{ product.version }}</small>
+    </div>
+    <!-- <div class="card-footer">
+      <i
+        class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div> -->
+  </div>
+</article>

@@ -1,0 +1,35 @@
+/* .icon {
+  font-size: 2.5rem;
+  cursor: pointer;
+} */
+
+.icon-primary {
+  color: var(--pico-primary);
+}
+.icon-secondary {
+  color: var(--pico-color-grey-450);
+}
+.icon-info {
+  color: var(--pico-primary);
+}
+
+.icon-success {
+  color: var(--pico-color-green-500);
+}
+
+.icon-warning {
+  /* color: var(--pico-color-orange-500); */
+  color: var(--pico-color-pumpkin-450);
+}
+
+.icon-danger {
+  color: var(--pico-color-red-500);
+}
+
+.icon-light {
+  color: var(--pico-color-grey-200);
+}
+
+.icon-dark {
+  color: var(--pico-color-grey-700);
+}

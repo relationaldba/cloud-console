@@ -1,0 +1,36 @@
+{% block sidenav %}
+
+<div class="sidenav-header">
+  <hgroup>
+    <!-- <h4>Hi {{ user.first_name }},</h4> -->
+    <!-- <p>Welcome to ACME Cloud!</p> -->
+    <!-- <p>What would you like to do today?</p> -->
+  </hgroup>
+</div>
+
+<!-- hx-on::response-error="handleHTTPError(event)" -->
+<div class="sidenav-body">
+  {% if user is defined and user.active %}
+  <h5><a class="button outline" href="#" hx-get="/deployments" hx-trigger="click" hx-swap="innerHTML" hx-target=".content-root" >Deployments</a></h5>
+  <hr />
+  <h5><a class="button outline" href="#" hx-get="/stacks" hx-trigger="click" hx-swap="innerHTML" hx-target=".content-root" >Stacks</a></h5>
+  <hr />
+  <h5><a class="button outline" href="#" hx-get="/products" hx-trigger="click" hx-swap="innerHTML" hx-target=".content-root" >Products</a></h5>
+  <hr />
+  <h5><a class="button outline" href="#" hx-get="/services" hx-trigger="click" hx-swap="innerHTML" hx-target=".content-root" >Services</a></h5>
+  <hr />
+  {% if user.first_name == "Admin" %}
+  <h5><a class="button outline" href="#" hx-get="/admin" hx-trigger="click" hx-swap="innerHTML" hx-target=".content-root" >Admin</a></h5>
+  {% endif %} 
+  {% endif %}
+</div>
+
+<div class="sidenav-footer">
+  <hgroup>
+    <!-- <h4>Hi {{ user.first_name }},</h4> -->
+    <!-- <p>Welcome to ACME Cloud!</p> -->
+    <!-- <p>What would you like to do today?</p> -->
+  </hgroup>
+</div>
+
+{% endblock %}

@@ -1,0 +1,177 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"); */
+
+:root {
+  --pico-font-family: "Lato", "Inter", "Raleway", "Poppins", "Open Sans", sans-serif, system-ui;
+  --pico-font-size: 106.25%;
+  /* --pico-font-size: 131.25%; */
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+body > header {
+  flex: 0 1 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px;
+}
+
+body > footer {
+  flex: 0 0 5%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 0px;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  gap: 2rem;
+  /* flex-direction: column; */
+  /* align-items: center; */
+  /* justify-content: center; */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 500;
+}
+
+label {
+  font-size: small;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+}
+
+dialog {
+  /* border-radius: 1rem; */
+  padding: 1rem;
+  box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.1);
+}
+
+button {
+  padding: 0.25rem;
+}
+
+dialog article button {
+  padding: 0.25rem;
+}
+
+.navbar-btn {
+  border-width: 0;
+  padding: 0.25rem;
+}
+
+.sidenav-root {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  /* justify-content: space-between; */
+  min-width: 250px;
+  max-width: 300px;
+  height: auto;
+  /* margin: 0; */
+  /* padding: 0.5rem; */
+  gap: 1rem;
+  border: 1px solid lightgray;
+
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.content-root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* width: 100%; */
+  /* overflow: auto; */
+  /* flex-wrap: wrap; */
+  /* justify-content: center; */
+  /* align-items: center; */
+  /* gap: 0.5rem; */
+  /* border: 1px solid lightgray; */
+  /* border-radius: 1rem; */
+  padding: 0rem, 2rem;
+}
+
+.content-header {
+  display: flex;
+  flex-direction: column;
+  /* overflow: auto; */
+  /* flex-wrap: wrap; */
+  /* justify-content: space-evenly; */
+  /* align-items: center; */
+  /* border: 1px solid lightgray; */
+  /* border-radius: 1rem; */
+  /* padding: 0.5rem; */
+}
+
+
+.content-icon {
+  float: right;
+  padding: 0rem 2rem;
+  font-size: 3rem;
+  max-width: 4rem;
+  /* align-self: center; */
+  /* justify-content: center; */
+  /* align-items: center;  */
+}
+
+.content-body {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  overflow: auto;
+  flex-wrap: wrap;
+  /* justify-content: space-evenly; */
+  /* align-items: center; */
+  gap: 1rem;
+  /* border: 1px solid lightgray; */
+  /* border-radius: 1rem; */
+  padding: 1rem;
+  overflow-y: auto; 
+  max-height: 85vh;
+}
+
+.error-message {
+  color: var(--pico-color-red-500);
+  min-height: 1rem;
+  padding-top: 0.5rem;
+  font-size: small;
+}
+
+.info-message {
+  color: var(--pico-color-blue-500);
+  min-height: 1rem;
+  padding-top: 0.5rem;
+  font-size: small;
+}
+
+.success-message {
+  color: var(--pico-color-green-500);
+  min-height: 1rem;
+  padding-top: 0.5rem;
+  font-size: small;
+}

@@ -1,0 +1,77 @@
+name: api
+
+services:
+  fastapi-app:
+    image: fastapi-app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      # no_cache: true
+
+    # container_name: fastapi-app
+    hostname: fastapi-app
+    command: ["uvicorn", "--host", "0.0.0.0", "app.main:app", "--reload"]
+    env_file:
+      - ./.env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    # volumes:
+    #   - ./app:/api/app
+    #   - ./tests:/api/tests
+    develop:
+      watch:
+        - action: rebuild
+          path: requirements.txt
+        - action: rebuild
+          path: ./app/models
+        - action: sync
+          path: ./app
+          target: /home/appuser/app
+        # - action: sync
+        #   path: ./tests
+        #   target: /home/appuser/api/tests
+    ports:
+      - 8000:8000
+    depends_on:
+      fastapi-db:
+        condition: service_healthy
+    networks:
+      - cloud-console-network
+
+  fastapi-db:
+    image: postgres:latest
+    container_name: fastapi-db
+    hostname: fastapi-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=fastapi
+    # volumes:
+    #   - ./.pgdata:/var/lib/postgresql/data
+    volumes:
+      - database:/var/lib/postgresql/data
+    ports:
+      - "8001:5432"
+    command:
+      - "-c"
+      - "log_statement=none"
+      - "-c"
+      - "log_connections=off"
+      - "-c"
+      - "log_disconnections=off"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --username=postgres"]
+      interval: 0.5s
+      timeout: 0.5s
+      retries: 20
+    networks:
+      - cloud-console-network
+
+volumes:
+  database:
+    name: database
+
+networks:
+  cloud-console-network:
+    name: cloud-console-network

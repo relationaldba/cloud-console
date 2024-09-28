@@ -1,0 +1,119 @@
+{% extends "shared/base.html" %}
+
+{% block content %}
+{% if user is defined and user.active %}
+
+<div class="sidenav-root">
+  {% include "shared/nav-sidebar.html" %}
+</div>
+
+<div class="content-root">
+
+  <div class="content-header">
+    <hgroup>
+      <h4>Hi {{ user.first_name }},</h4>
+      <p>Welcome to ACME Cloud! What would you like to do today?</p>
+    </hgroup>
+  </div>
+
+  <hr />
+
+  <div class="content-body">
+    <article class="card card-generic">
+      <header class="card-header">
+        <h4>Deployments</h4>
+      </header>
+      <div class="card-content">
+        <div class="card-body">
+          <p>Create and manage your deployments.</p>
+        </div>
+        <div class="card-footer">
+          <button class="primary">Create</button>
+          <button class="outline"
+                  hx-get="/deployments"
+                  hx-trigger="click"
+                  hx-swap="innerHTML"
+                  hx-target=".content-root"
+                  hx-on::response-error="handleHTTPError(event)">Manage</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="card card-generic">
+      <header class="card-header">
+        <h4>Stacks</h4>
+      </header>
+      <div class="card-content">
+        <div class="card-body">
+          <p>Explore the stacks. Learn about their capabilities and features.</p>
+        </div>
+        <div class="card-footer">
+          <!-- <button class="primary">Create</button> -->
+          <button class="outline"
+                  hx-get="/stacks"
+                  hx-trigger="click"
+                  hx-swap="innerHTML"
+                  hx-target=".content-root"
+                  hx-on::response-error="handleHTTPError(event)">Details</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="card card-generic">
+      <header class="card-header">
+        <h4>Products</h4>
+      </header>
+      <div class="card-content">
+        <div class="card-body">
+          <p>Browse through the list of available products.</p>
+        </div>
+        <div class="card-footer">
+          <!-- <button class="primary">Create</button> -->
+          <button class="outline"
+                  hx-get="/products"
+                  hx-trigger="click"
+                  hx-swap="innerHTML"
+                  hx-target=".content-root"
+                  hx-on::response-error="handleHTTPError(event)">Details</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="card card-generic">
+      <header class="card-header">
+        <h4>Services</h4>
+      </header>
+      <div class="card-content">
+        <div class="card-body">
+          <p>Check out our cloud services catalog.</p>
+        </div>
+        <div class="card-footer">
+          <!-- <button class="primary">Create</button> -->
+          <button class="outline"
+                  hx-get="/services"
+                  hx-trigger="click"
+                  hx-swap="innerHTML"
+                  hx-target=".content-root"
+                  hx-on::response-error="handleHTTPError(event)">Details</button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="content-footer">
+
+    <label class="error-message"
+           id="error-message"
+           style="display: none;"></label>
+  </div>
+</div>
+{% endif %}
+<!-- <form hx-post="/products" hx-trigger="submit" hx-target="#products" hx-swap="beforeend" hx-ext="json-enc">
+  <label for="name">Name</label>
+  <input type="text" name="name" id="name" />
+  <input type="submit" value="Submit" />
+</form> -->
+
+<!-- <div id="products" hx-get="/products" hx-trigger="load" hx-swap="innerHTML"></div> -->
+
+{% endblock %}
