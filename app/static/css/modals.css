@@ -68,6 +68,33 @@
   margin-right: 2rem;
 }
 
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.submit-btn {
+  width: 50% !important;
+}
+
+.cancel-btn {
+  width: 50% !important;
+}
+
+.edit-btn {
+  width: 50% !important;
+}
+
+.delete-btn {
+  width: 50% !important;
+}
+
+.modal-body label[for="active"] {
+  margin-bottom: 1rem;
+}
+
 /***** Animations ******/
 @keyframes fadeIn {
   0% {

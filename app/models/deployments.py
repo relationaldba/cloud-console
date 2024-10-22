@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     TIMESTAMP,
-    Boolean,
     ForeignKey,
     Integer,
     String,
@@ -14,6 +13,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 if TYPE_CHECKING:
+    from .cloudproviders import CloudProvider
+    from .environments import Environment
     from .stacks import Stack
     from .users import User
 
@@ -35,12 +36,22 @@ class Deployment(Base):
         type_=String(128),
         nullable=False,
     )
-    active: Mapped[bool] = mapped_column(
-        name="active",
-        type_=Boolean,
+    status: Mapped[str] = mapped_column(
+        name="status",
+        type_=String(128),
         nullable=False,
-        default=True,
-        server_default="true",
+    )
+    created_by: Mapped[int] = mapped_column(
+        ForeignKey(
+            column="users.id",
+            name="fk_deployments_users",
+            ondelete="CASCADE",
+        ),
+        name="user_id",
+        nullable=False,
+    )
+    user: Mapped["User"] = relationship(
+        back_populates="deployments",
     )
     created_at: Mapped[datetime] = mapped_column(
         name="created_at",
@@ -55,6 +66,30 @@ class Deployment(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+    cloudprovider_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            column="cloudproviders.id",
+            name="fk_deployments_cloudproviders",
+            ondelete="CASCADE",
+        ),
+        name="cloudprovider_id",
+        nullable=False,
+    )
+    cloudprovider: Mapped["CloudProvider"] = relationship(
+        back_populates="deployments",
+    )
+    environment_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            column="environments.id",
+            name="fk_deployments_environments",
+            ondelete="CASCADE",
+        ),
+        name="environment_id",
+        nullable=False,
+    )
+    environment: Mapped["Environment"] = relationship(
+        back_populates="deployments",
+    )
     stack_id: Mapped[int] = mapped_column(
         ForeignKey(
             column="stacks.id",
@@ -67,30 +102,3 @@ class Deployment(Base):
     stack: Mapped["Stack"] = relationship(
         back_populates="deployments",
     )
-    # team_id: Mapped[int] = mapped_column(
-    #     ForeignKey(
-    #         column="teams.id",
-    #         name="fk_deployments_teams",
-    #         ondelete="CASCADE",
-    #     ),
-    #     name="team_id",
-    #     nullable=False,
-    # )
-    # team: Mapped["Team"] = relationship(
-    #     back_populates="deployments",
-    # )
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            column="users.id",
-            name="fk_deployments_users",
-            ondelete="CASCADE",
-        ),
-        name="user_id",
-        nullable=False,
-    )
-    user: Mapped["User"] = relationship(
-        back_populates="deployments",
-    )
-
-
-# TODO: add deployment created by user

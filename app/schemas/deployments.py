@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.environments import EnvironmentResponse
 from app.schemas.stacks import StackResponse
-from app.schemas.teams import TeamResponse
-from app.schemas.users import UserResponse
 
 
 class DeploymentBase(BaseModel):
@@ -17,9 +16,10 @@ class DeploymentBase(BaseModel):
     )
 
     name: str
+    cloudprovider_id: int
     stack_id: int
-    team_id: int
-    user_id: int
+    environment_id: int
+    status: str | None = Field(default="pending")
 
 
 class DeploymentCreate(DeploymentBase):
@@ -31,7 +31,7 @@ class DeploymentCreate(DeploymentBase):
 class DeploymentUpdate(DeploymentBase):
     """The model for updating the Deployment object"""
 
-    active: bool
+    pass
 
 
 class DeploymentResponse(DeploymentBase):
@@ -40,10 +40,19 @@ class DeploymentResponse(DeploymentBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    active: bool
     created_at: datetime
     updated_at: datetime
 
     stack: StackResponse
-    user: UserResponse
-    team: TeamResponse
+    environment: EnvironmentResponse
+
+
+class DeploymentValidate(BaseModel):
+    """The base model for the validation of the Deployment object"""
+
+    name: str | None = None
+    cloudprovider: str | None = None
+    aws_account_id: str | None = None
+    aws_access_key_id: str | None = None
+    aws_secret_access_key: str | None = None
+    aws_region: str | None = None

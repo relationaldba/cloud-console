@@ -3,12 +3,34 @@
   flex-direction: column;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
   transition: transform 0.15s, box-shadow 0.15s;
+  width: 300px;
+  height: 175px;
+}
+
+.card-add {
+  width: 300px;
+  height: 125px;
+  background-color: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+}
+
+.card-add h4,
+.card-add i {
+  color: var(--pico-primary-inverse);
+  /* margin: 0px; */
+}
+
+.card-add .card-body {
+  align-items: center;
+}
+.card-add .card-body i {
+  font-size: 2rem;
 }
 
 .card:hover {
   cursor: pointer;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.4);
-  transform: scale(1.03);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+  transform: scale(1.05);
 }
 
 .card-content {
@@ -30,8 +52,6 @@
   padding: 0.25rem;
 }
 
-
-
 /* .card-button {
   width: 100%;
   padding: 0rem;
@@ -51,34 +71,32 @@
   /* padding: 0.25rem; */
 }
 
-
-
-.card-generic {
-  width: 300px;
-  height: 300px;
-}
-
 .card-services {
-  width: 275px;
-  height: 150px;
-}
-
-.card-stacks {
-  width: 275px;
+  width: 300px;
   height: 150px;
 }
 
 .card-deployments {
-  width: 275px;
+  width: 300px;
   height: 150px;
 }
 
+/***** Generic Card ******/
+
+.card-generic {
+  width: 300px;
+  height: 200px;
+}
+
+.card-generic:hover {
+  cursor: default;
+}
 
 /***** Product Card ******/
 
 .card-products {
-  width: 200px;
-  height: 100px;
+  width: 300px;
+  height: 150px;
 }
 
 .card-add-products {
@@ -89,9 +107,8 @@
 .card-add-products h4,
 .card-add-products i {
   color: var(--pico-primary-inverse);
-  margin: 0px;
+  /* margin: 0px; */
 }
-
 
 .card-add-products .card-body {
   align-items: center;
@@ -100,10 +117,83 @@
   font-size: 2rem;
 }
 
+/***** Environment Card ******/
 
+.card-environments {
+  width: 300px;
+  height: 150px;
+}
+
+.card-add-environments {
+  background-color: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+}
+
+.card-add-environments h4,
+.card-add-environments i {
+  color: var(--pico-primary-inverse);
+  /* margin: 0px; */
+}
+
+.card-add-environments .card-body {
+  align-items: center;
+}
+.card-add-environments .card-body i {
+  font-size: 2rem;
+}
+
+/***** Stacks Card ******/
+
+.card-stacks {
+  width: 300px;
+  height: 150px;
+}
+
+.card-add-stacks {
+  background-color: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+}
+
+.card-add-stacks h4,
+.card-add-stacks i {
+  color: var(--pico-primary-inverse);
+  /* margin: 0px; */
+}
+
+.card-add-stacks .card-body {
+  align-items: center;
+}
+.card-add-stacks .card-body i {
+  font-size: 2rem;
+}
+
+/***** Deployments Card ******/
+
+.card-deployments {
+  width: 300px;
+  height: 200px !important;
+}
+
+.card-add-deployments {
+  background-color: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+}
+
+.card-add-deployments h4,
+.card-add-deployments i {
+  color: var(--pico-primary-inverse);
+  /* margin: 0px; */
+}
+
+.card-add-deployments .card-body {
+  align-items: center;
+}
+.card-add-deployments .card-body i {
+  font-size: 2rem;
+}
 
 /***** Animations ******/
-.card-products.htmx-swapping {
+.card.htmx-swapping {
   opacity: 0;
-  transition: opacity 1s ease-out;
+  transition: opacity 2s ease-out;
 }

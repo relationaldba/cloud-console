@@ -1,7 +1,8 @@
 {% extends "shared/base.html" %}
 
 {% block content %}
-{% if user is defined and user.active %}
+
+{% if current_user is defined and current_user.active %}
 
 <div class="sidenav-root">
   {% include "shared/nav-sidebar.html" %}
@@ -11,90 +12,107 @@
 
   <div class="content-header">
     <hgroup>
-      <h4>Hi {{ user.first_name }},</h4>
-      <p>Welcome to ACME Cloud! What would you like to do today?</p>
+      <h4>Hi {{ current_user.first_name }},</h4>
+      <p>Welcome to {{ config.organization_name }} Cloud Services. What would you like to do today?</p>
     </hgroup>
   </div>
 
   <hr />
 
   <div class="content-body">
+
     <article class="card card-generic">
       <header class="card-header">
+
         <h4>Deployments</h4>
       </header>
+
       <div class="card-content">
+
         <div class="card-body">
           <p>Create and manage your deployments.</p>
         </div>
+
         <div class="card-footer">
-          <button class="primary">Create</button>
+          <button class="primary"
+                  hx-get="/deployments/create"
+                  hx-trigger="click"
+                  hx-swap="beforeend"
+                  hx-target=".content-root">Create</button>
           <button class="outline"
                   hx-get="/deployments"
                   hx-trigger="click"
                   hx-swap="innerHTML"
-                  hx-target=".content-root"
-                  hx-on::response-error="handleHTTPError(event)">Manage</button>
+                  hx-target=".content-root">Manage</button>
         </div>
       </div>
     </article>
 
     <article class="card card-generic">
       <header class="card-header">
+
         <h4>Stacks</h4>
       </header>
+
       <div class="card-content">
+
         <div class="card-body">
-          <p>Explore the stacks. Learn about their capabilities and features.</p>
+          <p>Explore the stacks and learn about their features.</p>
         </div>
+
         <div class="card-footer">
           <!-- <button class="primary">Create</button> -->
           <button class="outline"
                   hx-get="/stacks"
                   hx-trigger="click"
                   hx-swap="innerHTML"
-                  hx-target=".content-root"
-                  hx-on::response-error="handleHTTPError(event)">Details</button>
+                  hx-target=".content-root">Details</button>
         </div>
       </div>
     </article>
 
     <article class="card card-generic">
       <header class="card-header">
+
         <h4>Products</h4>
       </header>
+
       <div class="card-content">
+
         <div class="card-body">
           <p>Browse through the list of available products.</p>
         </div>
+
         <div class="card-footer">
           <!-- <button class="primary">Create</button> -->
           <button class="outline"
                   hx-get="/products"
                   hx-trigger="click"
                   hx-swap="innerHTML"
-                  hx-target=".content-root"
-                  hx-on::response-error="handleHTTPError(event)">Details</button>
+                  hx-target=".content-root">Details</button>
         </div>
       </div>
     </article>
 
     <article class="card card-generic">
       <header class="card-header">
-        <h4>Services</h4>
+
+        <h4>Cloud Providers</h4>
       </header>
+
       <div class="card-content">
+
         <div class="card-body">
-          <p>Check out our cloud services catalog.</p>
+          <p>Check out the Cloud Providers that we can deploy to.</p>
         </div>
+
         <div class="card-footer">
           <!-- <button class="primary">Create</button> -->
           <button class="outline"
-                  hx-get="/services"
+                  hx-get="/cloudproviders"
                   hx-trigger="click"
                   hx-swap="innerHTML"
-                  hx-target=".content-root"
-                  hx-on::response-error="handleHTTPError(event)">Details</button>
+                  hx-target=".content-root">Details</button>
         </div>
       </div>
     </article>

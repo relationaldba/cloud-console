@@ -1,16 +1,17 @@
 from fastapi import APIRouter
 
 from app.routers import (
+    cloudproviders,
     deployments,
+    environments,
     health,
     home,
     login,
     logout,
     products,
-    services,
     stacks,
     users,
-    validations
+    validations,
 )
 
 """
@@ -30,9 +31,9 @@ json_router.include_router(
     tags=["products"],
 )
 json_router.include_router(
-    services.json_router,
+    environments.json_router,
     prefix="/api",
-    tags=["services"],
+    tags=["environments"],
 )
 json_router.include_router(
     stacks.json_router,
@@ -43,6 +44,11 @@ json_router.include_router(
     deployments.json_router,
     prefix="/api",
     tags=["deployments"],
+)
+json_router.include_router(
+    cloudproviders.json_router,
+    prefix="/api",
+    tags=["cloudproviders"],
 )
 json_router.include_router(
     users.json_router,
@@ -76,32 +82,45 @@ html_router = APIRouter()
 html_router.include_router(
     products.html_router,
     tags=["products"],
+    include_in_schema=False,
 )
 html_router.include_router(
-    services.html_router,
-    tags=["services"],
+    environments.html_router,
+    tags=["environments"],
+    include_in_schema=False,
 )
 html_router.include_router(
     stacks.html_router,
     tags=["stacks"],
+    include_in_schema=False,
 )
 html_router.include_router(
     deployments.html_router,
     tags=["deployments"],
+    include_in_schema=False,
+)
+html_router.include_router(
+    cloudproviders.html_router,
+    tags=["cloudproviders"],
+    include_in_schema=False,
 )
 html_router.include_router(
     login.html_router,
     tags=["authentication"],
+    include_in_schema=False,
 )
 html_router.include_router(
     logout.html_router,
     tags=["authentication"],
+    include_in_schema=False,
 )
 html_router.include_router(
     home.html_router,
     tags=["home"],
+    include_in_schema=False,
 )
 html_router.include_router(
     validations.html_router,
     tags=["modals"],
+    include_in_schema=False,
 )

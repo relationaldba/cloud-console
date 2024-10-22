@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import List
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from app.schemas.stack_details import StackDetailResponse
+from .cloudproviders import CloudProviderMiniResponse
+
+# from app.schemas.stack_details import StackDetailResponse
 
 
 class StackBase(BaseModel):
@@ -16,6 +17,9 @@ class StackBase(BaseModel):
     )
 
     name: str
+    class_name: str
+    description: str | None = Field(default=None, min_length=0)
+    cloudprovider_id: int
 
 
 class StackCreate(StackBase):
@@ -27,17 +31,34 @@ class StackCreate(StackBase):
 class StackUpdate(StackBase):
     """The model for updating the Stack object"""
 
-    active: bool
+    active: bool | None = False
 
 
-class StackResponse(StackBase):
+class StackResponse(BaseModel):
     """The model for reading the Stack object"""
 
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    name: str
+    class_name: str
+    description: str | None = Field(default=None, min_length=0)
     active: bool
     created_at: datetime
     updated_at: datetime
+    creator: EmailStr
 
-    stack_details: List[StackDetailResponse]
+    # stack_details: List[StackDetailResponse]
+    cloudprovider: CloudProviderMiniResponse
+
+
+class StackValidate(BaseModel):
+    """The base model for the validation of the Stack object"""
+
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+    )
+
+    name: str | None = None
+    class_name: str | None = None
+    description: str | None = None

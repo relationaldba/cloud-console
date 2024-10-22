@@ -76,6 +76,7 @@ TODO Frontend:
     - Add mechanism to invalidate the refresh token when a new refresh token is issued
     - Research the IaC solutions for the backend
     - Create Stacks API
+    - Automatic CIDR block management
 
 - Medium:
     - Format the 404 messages
@@ -90,6 +91,8 @@ TODO Frontend:
     - Add htmx:validation to the search input
     - Add active search functionality
     - User Management: Add functionality to edit user profile
+    - Inactive filter on results
+    - Create indexes
 
 - Low:
     - Add loading spinners on the login page

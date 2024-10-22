@@ -1,0 +1,20 @@
+<select name="environment_id"
+        id="environments"
+        hx-get="/stacks-cloudproviders"
+        hx-target="#stacks"
+        hx-swap="outerHTML"
+        class="inline-editable"
+        aria-label="Environment"
+        required>
+  {% if action == "read" or action == "update" %}
+  <option selected
+          value="{{ deployment.environment.id }}">{{ deployment.environment.name }}</option>
+  {% else %}
+  <option selected
+          disabled
+          value="">Choose a Environment</option>
+  {% for environment in environments %}
+  <option value="{{ environment.id }}">{{ environment.name }}</option>
+  {% endfor %}
+  {% endif %}
+</select>

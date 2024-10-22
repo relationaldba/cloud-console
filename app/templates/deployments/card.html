@@ -1,0 +1,24 @@
+<article class="card card-deployments"
+         id='{{ "card-deployments-" ~ deployment.id }}'
+         hx-get='{{ "/deployments/" ~ deployment.id }}'
+         hx-target="body"
+         hx-swap="beforeend">
+
+  <div class="card-content">
+
+    <div class="card-body">
+      <h4>{{ deployment.name }}</h4>
+
+      <small>Cloud Provider: {{ deployment.cloudprovider.name }}</small>
+      <small>Region: {{ deployment.environment.aws_region }}</small>
+      <small>Account: {{ deployment.environment.aws_account_id }}</small>
+      <small>Stack: {{ deployment.stack.name }}</small>
+      <small>Status: {{ deployment.status }}</small>
+
+    </div>
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+</article>

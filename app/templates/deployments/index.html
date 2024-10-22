@@ -1,0 +1,55 @@
+<div class="content-header">
+
+  <hgroup>
+
+    <h3>Deployments</h3>
+    <p>Create and Manage your Deployments. Deployments is installation of Products and Stacks in an Environment.</p>
+  </hgroup>
+
+  <article class="card card-add"
+           hx-get="/deployments/create"
+           hx-target=".content-body"
+           hx-swap="beforeend">
+
+    <div class="card-content">
+
+      <div class="card-body">
+        <h4>Deploy a Stack</h4>
+        <i class="bi bi-plus-circle-fill card-icon icon-primary"></i>
+      </div>
+    </div>
+  </article>
+</div>
+
+<hr />
+
+<div class="content-options">
+  <small>Showing {{ deployments|length }} deployments. </small>
+  <label for="active"
+         hx-get="/deployments"
+         hx-trigger="click"
+         hx-swap="innerHTML"
+         hx-target=".content-root">
+    <input type="checkbox"
+           id="active"
+           name="active"
+           checked
+           disabled>Show Inactive</label>
+</div>
+
+<div class="content-body">
+
+  {% for deployment in deployments %}
+
+  {% include "deployments/card.html" %}
+
+  {% endfor %}
+
+</div>
+
+<div class="content-footer">
+
+  <label class="error-message"
+         id="error-message"
+         style="display: none;"></label>
+</div>

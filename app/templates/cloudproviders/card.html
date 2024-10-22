@@ -1,0 +1,20 @@
+<article class="card"
+         id='{{ "card-cloudproviders-" ~ cloudprovider.id }}'
+         hx-get='{{ "/cloudproviders/" ~ cloudprovider.id }}'
+         hx-target="body"
+         hx-swap="beforeend">
+
+  <div class="card-content">
+
+    <div class="card-body">
+      <h4>{{ cloudprovider.name }}</h4>
+
+      <small>Code: {{ cloudprovider.code }}</small>
+
+    </div>
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,188 @@
+<dialog id="cloudprovider-detail-modal"
+        class="modal"
+        open=""
+        _="on closeModal add .closing then wait for animationend then remove me">
+
+  <div class="modal-underlay"
+       _="on click trigger closeModal"></div>
+
+  <article class="modal-content">
+
+    <form id="cloudprovider-detail-form"
+          {% if action == "read" %}
+          hx-get="/cloudproviders/{{ cloudprovider.id }}/edit"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#cloudprovider-detail-modal"
+          {% elif action == "create" %}
+          hx-post="/cloudproviders"
+          hx-validate="true"
+          hx-trigger="submit"
+          hx-swap="beforeend"
+          hx-target=".content-body"
+          {% elif action == "update" %}
+          hx-put="/cloudproviders/{{ cloudprovider.id }}"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#cloudprovider-detail-modal"
+          {% endif %}
+          hx-ext="json-enc">
+
+      <div class="modal-body">
+
+        <i class="bi bi-x-circle-fill modal-icon icon-secondary"
+           _="on click trigger closeModal"></i>
+
+        <h4>
+          Cloud Provider Details
+        </h4>
+
+        <label for="name">Cloud Provider Name <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="name"
+                 placeholder="Cloud Provider Name"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Cloud Provider Name"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/cloudproviders/validate/name"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ cloudprovider.name }}"
+                 readonly
+                 {% endif %} />
+          <small id="name-helper"></small>
+        </label>
+
+        <label for="code">Cloud Provider Code <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="code"
+                 placeholder="A short code e.g. aws, gcp, azure etc"
+                 required
+                 minlength="3"
+                 maxlength="12"
+                 aria-label="Cloud Provider Code"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/cloudproviders/validate/code"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ cloudprovider.code }}"
+                 readonly
+                 {% endif %} />
+        </label>
+
+        <label for="description">Description <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="description"
+                 placeholder="Description"
+                 maxlength="256"
+                 aria-label="Description"
+                 hx-ext="json-enc"
+                 {% if action == "read" %}
+                 value="{{ cloudprovider.description }}"
+                 readonly
+                 {% elif action == "update" %}
+                 value="{{ cloudprovider.description }}"
+                 aria-invalid="false"
+                 {% endif %} />
+        </label>
+
+        <label for="active">Active &nbsp;&nbsp;
+          <input name="active"
+                 id="active"
+                 aria-label="Cloud Provider Active"
+                 type="checkbox"
+                 {% if action == "read" or action == "create" %}disabled{% endif %}
+                 {% if cloudprovider is undefined or cloudprovider.active %}checked{% endif %} />
+        </label>
+
+        {% if action == "read" or action == "update" %}
+        <label>Created By &nbsp;{{ cloudprovider.creator }}</label>
+        <label>Created Date &nbsp;{{ cloudprovider.created_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        <label>Updated Date &nbsp;{{ cloudprovider.updated_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        {% endif %}
+
+        <label class="error-message"
+               id="error-message"
+               style="display: none;">
+        </label>
+
+        <label class="success-message"
+               id="success-message"
+               style="display: none;">
+        </label>
+
+        <label class="info-message"
+               id="info-message"
+               style="display: none;">
+        </label>
+      </div>
+
+      <div class="modal-footer">
+
+        {% if action == "read" %}
+        <button type="button"
+                class="secondary outline delete-btn"
+                id="delete-btn"
+                hx-delete="/cloudproviders/{{ cloudprovider.id }}"
+                hx-swap="outerHTML swap:1s"
+                hx-target="#card-cloudproviders-{{ cloudprovider.id }}"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Delete</button>
+        <button type="button"
+                class="primary edit-btn"
+                id="edit-btn"
+                hx-get="/cloudproviders/{{ cloudprovider.id }}/edit"
+                hx-swap="outerHTML"
+                hx-target="#cloudprovider-detail-modal"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Edit</button>
+        {% elif action == "update" or action == "create" %}
+        <button type="submit"
+                class="primary submit-btn"
+                id="submit-btn"
+                {% if action == "create" and not ready_to_submit %}disabled{% endif %}
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Save</button>
+        {% endif %}
+        <button type="button"
+                class="outline cancel-btn"
+                id="cancel-btn"
+                _="on click trigger closeModal end on htmx:beforeRequest set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @disabled">Cancel</button>
+      </div>
+
+    </form>
+  </article>
+</dialog>
+
+<!-- Send an out of band update to the card with the updated contents -->
+
+{% if action == "read" %}
+
+<article class="card"
+         id='{{ "card-cloudproviders-" ~ cloudprovider.id }}'
+         hx-get='{{ "/cloudproviders/" ~ cloudprovider.id }}'
+         hx-target="body"
+         hx-swap="beforeend"
+         hx-swap-oob="true">
+
+  <div class="card-content">
+
+    <div class="card-body">
+      <h4>{{ cloudprovider.name }}</h4>
+
+      <small>Code: {{ cloudprovider.code }}</small>
+
+    </div>
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+</article>
+{% endif %}

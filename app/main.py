@@ -8,6 +8,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # from app.auth import NotAuthenticatedException
 from app.database import Base, engine
+from app.exceptions.exceptions import InvalidCredentialsException
 from app.routers import html_router, json_router
 
 # Create Metadata
@@ -40,8 +41,8 @@ app.add_middleware(
 )
 
 
-@app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+@app.exception_handler(InvalidCredentialsException)
+async def hx_authentixation_(request: Request, exc: InvalidCredentialsException):
     """
 
     Redirect the user to the login page if authentication fails or if the user does not have the necessary permissions
@@ -56,8 +57,21 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     Returns
     -------
     fastapi.Response
-        A 303 redirect response that redirects the user to the login page if authentication fails or if the user does not have the necessary permissions
+        A 303 redirect response that redirects the user to the login page if authentication fails
     """
+    print("InvalidCredentialsException, redirecting to login page")
+    response = RedirectResponse(
+        url="/login",
+        status_code=status.HTTP_303_SEE_OTHER,
+        headers={"HX-Refresh": "true"},
+    )
+    response.delete_cookie("auth_token")
+    return response
+
+
+# @app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """ """
     print("http exception handler")
     if exc.status_code == status.HTTP_401_UNAUTHORIZED:
         context = {"user": None}
@@ -114,12 +128,12 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     #         "exception": exc,
     #         "message": "Please check the data you entered.",
     #     }
-        # response = templates.TemplateResponse(
-        #     request=request,
-        #     name="error/error-message.html",
-        #     context=context,
-        # )
-        # return response
+    # response = templates.TemplateResponse(
+    #     request=request,
+    #     name="error/error-message.html",
+    #     context=context,
+    # )
+    # return response
 
     elif exc.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR:
         context = {
@@ -149,17 +163,17 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     )
     return response
 
-
+"""
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc):
     print("validation exception handler")
     print(exc.errors()[0])
     # if exc.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY:
     context = {
-            "request": request,
-            "exception": exc,
-            "message": f"{exc.errors()[0].get('msg')}. Please check the data you entered.",
-        }
+        "request": request,
+        "exception": exc,
+        "message": f"{exc.errors()[0].get('msg')}. Please check the data you entered.",
+    }
     response = templates.TemplateResponse(
         request=request,
         name="errors/error-message.html",
@@ -167,3 +181,4 @@ async def validation_exception_handler(request, exc):
         headers={"HX-Reswap": "none"},
     )
     return response
+"""

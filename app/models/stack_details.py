@@ -43,44 +43,44 @@ class StackDetail(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
-    product_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            column="products.id",
-            name="fk_stack_details_products",
-            ondelete="CASCADE",
-        ),
-        name="product_id",
-        nullable=False,
-    )
-    product: Mapped["Product"] = relationship(
-        back_populates="stack_details",
-    )
-    service_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            column="services.id",
-            name="fk_stack_details_services",
-            ondelete="CASCADE",
-        ),
-        name="service_id",
-        nullable=False,
-    )
-    service: Mapped["Service"] = relationship(
-        back_populates="stack_details",
-    )
-    service_type: Mapped[str] = mapped_column(
-        name="service_type",
-        type_=String(128),
-        nullable=False,
-    )
-    stack_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            column="stacks.id",
-            name="fk_stack_details_stacks",
-            ondelete="CASCADE",
-        ),
-        name="stack_id",
-        nullable=False,
-    )
-    stack: Mapped["Stack"] = relationship(
-        back_populates="stack_details",
-    )
+    # product_id: Mapped[int] = mapped_column(
+    #     ForeignKey(
+    #         column="products.id",
+    #         name="fk_stack_details_products",
+    #         ondelete="CASCADE",
+    #     ),
+    #     name="product_id",
+    #     nullable=False,
+    # )
+    # product: Mapped["Product"] = relationship(
+    #     back_populates="stack_details",
+    # )
+    # service_id: Mapped[int] = mapped_column(
+    #     ForeignKey(
+    #         column="services.id",
+    #         name="fk_stack_details_services",
+    #         ondelete="CASCADE",
+    #     ),
+    #     name="service_id",
+    #     nullable=False,
+    # )
+    # service: Mapped["Service"] = relationship(
+    #     back_populates="stack_details",
+    # )
+    # service_type: Mapped[str] = mapped_column(
+    #     name="service_type",
+    #     type_=String(128),
+    #     nullable=False,
+    # )
+    # stack_id: Mapped[int] = mapped_column(
+    #     ForeignKey(
+    #         column="stacks.id",
+    #         name="fk_stack_details_stacks",
+    #         ondelete="CASCADE",
+    #     ),
+    #     name="stack_id",
+    #     nullable=False,
+    # )
+    # stack: Mapped["Stack"] = relationship(
+    #     back_populates="stack_details",
+    # )

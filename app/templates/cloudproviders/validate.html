@@ -1,0 +1,87 @@
+{% if field == "name" and is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="name"
+       placeholder="Cloud Provider Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Cloud Provider Name"
+       hx-post="/cloudproviders/validate/name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="name-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "name" and not is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="name"
+       placeholder="Cloud Provider Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Cloud Provider Name"
+       hx-post="/cloudproviders/validate/name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="name-helper"
+       value="{{ value }}" />
+<small id="name-helper"
+       hx-swap-oob="true">Must have atleast 3 letters</small>
+
+{% elif field == "code" and is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="code"
+       placeholder="Cloud Provider Code"
+       required
+       minlength="3"
+       maxlength="12"
+       aria-label="Cloud Provider Code"
+       hx-post="/cloudproviders/validate/code"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="code-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "code" and not is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="code"
+       placeholder="Cloud Provider Code"
+       required
+       minlength="3"
+       maxlength="12"
+       aria-label="Cloud Provider Code"
+       hx-post="/cloudproviders/validate/code"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="code-helper"
+       value="{{ value }}" />
+<small id="code-helper"
+       hx-swap-oob="true">Must have atleast 3 letters</small>
+
+{% endif %}
+
+<!-- Keep the sabe buttondisabled until ready_to_submit -->
+<button type="submit"
+        class="primary submit-btn"
+        id="submit-btn"
+        hx-swap-oob="true"
+        {% if not ready_to_submit %}disabled{% endif %}
+        _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Save</button>

@@ -1,0 +1,224 @@
+<dialog id="deployment-detail-modal"
+        class="modal"
+        open=""
+        _="on closeModal add .closing then wait for animationend then remove me">
+
+  <div class="modal-underlay"
+       _="on click trigger closeModal"></div>
+
+  <article class="modal-content">
+
+    <form id="deployment-detail-form"
+          {% if action == "read" %}
+          hx-get="/deployments/{{ deployment.id }}/edit"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#deployment-detail-modal"
+          {% elif action == "create" %}
+          hx-post="/deployments"
+          hx-validate="true"
+          hx-trigger="submit"
+          hx-swap="beforeend"
+          hx-target=".content-body"
+          {% elif action == "update" %}
+          hx-put="/deployments/{{ deployment.id }}"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#deployment-detail-modal"
+          {% endif %}
+          hx-ext="json-enc">
+
+      <div class="modal-body">
+
+        <i class="bi bi-x-circle-fill modal-icon icon-secondary"
+           _="on click trigger closeModal"></i>
+
+        <h4>
+          Deployment Details
+        </h4>
+
+        <label for="name">Deployment Name <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="name"
+                 placeholder="Deployment Name"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Deployment Name"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/deployments/validate/name"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ deployment.name }}"
+                 readonly
+                 {% endif %} />
+          <small id="name-helper"></small>
+        </label>
+
+        <label for="cloudprovider_id">Cloud Provider <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <select name="cloudprovider_id"
+                  id="cloudproviders"
+                  hx-get="/environments-cloudproviders"
+                  hx-target="#environments"
+                  hx-swap="outerHTML"
+                  class="inline-editable"
+                  aria-label="Cloud Provider"
+                  required
+                  {% if action == "read" or action == "update" %}readonly{% endif %}>
+            {% if action == "read" or action == "update" %}
+            <option selected
+                    value="{{ deployment.cloudprovider.id }}">{{ deployment.cloudprovider.name }}</option>
+            {% else %}
+            <option selected
+                    disabled
+                    value="">Choose a Cloud Provider</option>
+            {% for cloudprovider in cloudproviders %}
+            <option value="{{ cloudprovider.id }}">{{ cloudprovider.name }}</option>
+            {% endfor %}
+            {% endif %}
+          </select>
+        </label>
+
+        <label for="environment_id">Environment <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <select name="environment_id"
+                  id="environments"
+                  class="inline-editable"
+                  aria-label="Environment"
+                  required
+                  {% if action == "read" or action == "update" %}readonly{% endif %}
+                  {% if action == "create" %}disabled{% endif %}>
+            {% if action == "read" or action == "update" %}
+            <option selected
+                    value="{{ deployment.environment.id }}">{{ deployment.environment.name }}</option>
+            {% else %}
+            <option selected
+                    disabled
+                    value="">Choose a Environment</option>
+
+            {% endif %}
+          </select>
+        </label>
+
+        <label for="stack_id">Stack <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <select name="stack_id"
+                  id="stacks"
+                  class="inline-editable"
+                  aria-label="Stack"
+                  required
+                  {% if action == "read" or action == "update" %}readonly{% endif %}
+                  {% if action == "create" %}disabled{% endif %}>
+            {% if action == "read" or action == "update" %}
+            <option selected
+                    value="{{ deployment.stack.id }}">{{ deployment.stack.name }}</option>
+            {% else %}
+            <option selected
+                    disabled
+                    value="">Choose a Stack</option>
+
+            {% endif %}
+          </select>
+        </label>
+
+        <label for="description">Description
+          <input class="inline-editable"
+                 type="text"
+                 name="description"
+                 placeholder="Description"
+                 maxlength="256"
+                 aria-label="Description"
+                 hx-ext="json-enc"
+                 {% if action == "read" %}
+                 value="{{ deployment.description }}"
+                 readonly
+                 {% elif action == "update" %}
+                 value="{{ deployment.description }}"
+                 aria-invalid="false"
+                 {% endif %} />
+        </label>
+
+        {% if action == "read" or action == "update" %}
+        <label>Status: {{ deployment.status }}</label>
+        <label>Created By &nbsp;{{ deployment.creator }}</label>
+        <label>Created Date &nbsp;{{ deployment.created_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        <label>Updated Date &nbsp;{{ deployment.updated_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        {% endif %}
+
+        <label class="error-message"
+               id="error-message"
+               style="display: none;">
+        </label>
+
+        <label class="success-message"
+               id="success-message"
+               style="display: none;">
+        </label>
+
+        <label class="info-message"
+               id="info-message"
+               style="display: none;">
+        </label>
+      </div>
+
+      <div class="modal-footer">
+
+        {% if action == "read" %}
+        <button type="button"
+                class="secondary outline delete-btn"
+                id="delete-btn"
+                hx-delete="/deployments/{{ deployment.id }}"
+                hx-swap="outerHTML swap:1s"
+                hx-target="#card-deployments-{{ deployment.id }}"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Delete</button>
+        <button type="button"
+                class="primary edit-btn"
+                id="edit-btn"
+                hx-get="/deployments/{{ deployment.id }}/edit"
+                hx-swap="outerHTML"
+                hx-target="#deployment-detail-modal"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Edit</button>
+        {% elif action == "update" or action == "create" %}
+        <button type="submit"
+                class="primary submit-btn"
+                id="submit-btn"
+                {% if action == "create" and not ready_to_submit %}disabled{% endif %}
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Save</button>
+        {% endif %}
+        <button type="button"
+                class="outline cancel-btn"
+                id="cancel-btn"
+                _="on click trigger closeModal end on htmx:beforeRequest set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @disabled">Cancel</button>
+      </div>
+
+    </form>
+  </article>
+</dialog>
+
+<!-- Send an out of band update to the card with the updated contents -->
+
+{% if action == "read" %}
+
+<article class="card"
+         id='{{ "card-deployments-" ~ deployment.id }}'
+         hx-get='{{ "/deployments/" ~ deployment.id }}'
+         hx-target="body"
+         hx-swap="beforeend"
+         hx-swap-oob="true">
+
+  <div class="card-content">
+
+    <div class="card-body">
+      <h4>{{ deployment.name }}</h4>
+
+      <small>Code: {{ deployment.code }}</small>
+
+    </div>
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+</article>
+{% endif %}

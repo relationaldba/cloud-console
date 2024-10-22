@@ -1,19 +1,19 @@
 from app.exceptions.exceptions import (
-    AuthenticationError,
-    CloudStackApiError,
-    EntityAlreadyExistsError,
-    EntityDoesNotExistError,
-    InvalidOperationError,
-    InvalidTokenError,
-    ServiceError,
+    CloudStackApiException,
+    EntityAlreadyExistsException,
+    EntityDoesNotExistException,
+    InvalidCredentialsException,
+    InvalidOperationException,
+    InvalidTokenException,
+    ServiceException,
 )
 
 __all__ = [
-    "CloudStackApiError",
-    "ServiceError",
-    "EntityDoesNotExistError",
-    "EntityAlreadyExistsError",
-    "InvalidOperationError",
-    "AuthenticationError",
-    "InvalidTokenError",
+    "CloudStackApiException",
+    "ServiceException",
+    "EntityDoesNotExistException",
+    "EntityAlreadyExistsException",
+    "InvalidOperationException",
+    "InvalidCredentialsException",
+    "InvalidTokenException",
 ]

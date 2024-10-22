@@ -32,7 +32,7 @@ services:
         #   path: ./tests
         #   target: /home/appuser/api/tests
     ports:
-      - 8000:8000
+      - 7000:8000
     depends_on:
       fastapi-db:
         condition: service_healthy
@@ -40,7 +40,7 @@ services:
       - cloud-console-network
 
   fastapi-db:
-    image: postgres:latest
+    image: postgres:16
     container_name: fastapi-db
     hostname: fastapi-db
     environment:
@@ -52,7 +52,7 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
     ports:
-      - "8001:5432"
+      - "7001:5432"
     command:
       - "-c"
       - "log_statement=none"

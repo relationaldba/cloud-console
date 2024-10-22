@@ -1,58 +1,76 @@
 {% block nav %}
+
 <nav>
   <ul>
     <li>
-      <a href="/"><h3 style="margin: 0">ACME Corp</h3></a>
+      <!-- <a href="/">
+        <h3 style="margin: 0">{{ config.organization_name }}</h3>
+      </a> -->
+      <a href="/"><img alt="{{ config.organization_name }} Logo"
+             srcset="/static/img/sdh-logo.svg"
+             style="height: 60px" /></a>
     </li>
     <!-- <li> -->
     <!-- <a href="/"><img src="/static/img/logo.svg" alt="Acme Logo" srcset="/static/img/logo.svg" style="height: 70px" /></a> -->
     <!-- </li> -->
   </ul>
-  {% if user is defined and user.active %}
-  <ul>
-    <li><input class="form-control" style="min-width: 500px" id="search-input" type="search" name="search" placeholder="Search ..." hx-post="/search" hx-trigger="input changed delay:500ms, search" hx-target="#search-results" hx-indicator=".htmx-indicator" /></li>
-  </ul>
+
+  {% if current_user is defined and current_user.active %}
 
   <ul>
-    <!-- <li><a class="button outline" href="#" hx-get="/deployments" hx-trigger="click" hx-swap="innerHTML" hx-target="main" hx-on::response-error="handleHTTPError(event)">Deployments</a></li> -->
-    <!-- <li><a class="button outline" href="#" hx-get="/stacks" hx-trigger="click" hx-swap="innerHTML" hx-target="main" hx-on::response-error="handleHTTPError(event)">Stacks</a></li> -->
-    <!-- <li><a class="button outline" href="#" hx-get="/products" hx-trigger="click" hx-swap="innerHTML" hx-target="main" hx-on::response-error="handleHTTPError(event)">Products</a></li> -->
-    <!-- <li><a class="button outline" href="#" hx-get="/services" hx-trigger="click" hx-swap="innerHTML" hx-target="main" hx-on::response-error="handleHTTPError(event)">Services</a></li> -->
-    {% if user.superuser %}
-    <!-- <li><a class="button outline" href="#" hx-get="/admin" hx-trigger="click" hx-swap="innerHTML" hx-target="main" hx-on::response-error="handleHTTPError(event)">Admin</a></li> -->
-    {% endif %}
+    <li><input class="form-control"
+             style="min-width: 500px"
+             id="search-input"
+             type="search"
+             name="search"
+             placeholder="Search ..."
+             hx-post="/search"
+             hx-trigger="input changed delay:500ms, search"
+             hx-target="#search-results"
+             hx-indicator=".htmx-indicator" /></li>
+  </ul>
+
+  {% endif %}
+
+  <ul>
     <li>
-      <button id="theme-switcher" aria-label="Switch Theme" class="button outline navbar-btn">
-        <i id="theme-icon" class="bi bi-moon"></i>
+      <button id="theme-switcher"
+              aria-label="Switch Theme"
+              class="button outline navbar-btn">
+        <i id="theme-icon"
+           class="bi bi-moon"></i>
       </button>
     </li>
 
+    {% if current_user is defined and current_user.active %}
+
     <li>
       <details class="dropdown =">
-        <summary role="button" class="button outline">
+        <summary role="button"
+                 class="button outline">
           <i class="bi bi-person"></i>
         </summary>
         <ul dir="rtl">
           <li dir="ltr">
-            <a href="/profile"><i class="bi bi-person-bounding-box" style="margin-right: 1rem"></i>Profile</a>
+            <a href="#"><i class="bi bi-person-bounding-box"
+                 style="margin-right: 1rem"></i>Profile</a>
           </li>
+          <!-- <li dir="ltr">
+            <a href="#"><i class="bi bi-gear"
+                 style="margin-right: 1rem"></i>Settings</a>
+          </li> -->
           <li dir="ltr">
-            <a href="/settings"><i class="bi bi-gear" style="margin-right: 1rem"></i>Settings</a>
-          </li>
-          <!-- <li><a href="/security">Security</a></li> -->
-          <li dir="ltr">
-            <a href="/logout"><i class="bi bi-box-arrow-right" style="margin-right: 1rem"></i>Logout</a>
+            <a href="/logout"><i class="bi bi-box-arrow-right"
+                 style="margin-right: 1rem"></i>Logout</a>
           </li>
         </ul>
       </details>
     </li>
-    {% endif %} {% if user is undefined or not user.active %}
-    <li>
-      <button id="theme-switcher" aria-label="Switch Theme" class="button outline navbar-btn">
-        <i id="theme-icon" class="bi bi-moon"></i>
-      </button>
-    </li>
+
     {% endif %}
+
   </ul>
+
 </nav>
+
 {% endblock %}

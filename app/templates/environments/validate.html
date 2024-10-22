@@ -1,0 +1,165 @@
+{% if field == "name" and is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="name"
+       placeholder="Environment Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Environment Name"
+       hx-post="/environments/validate/name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="name-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "name" and not is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="name"
+       placeholder="Environment Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Environment Name"
+       hx-post="/environments/validate/name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="name-helper"
+       value="{{ value }}" />
+<small id="name-helper"
+       hx-swap-oob="true">Must have atleast 3 letters</small>
+
+{% elif field == "aws_account_id" and is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="aws_account_id"
+       placeholder="AWS Account ID"
+       required
+       minlength="12"
+       maxlength="12"
+       aria-label="AWS Account ID"
+       hx-post="/environments/validate/aws_account_id"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="aws_account_id-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "aws_account_id" and not is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="aws_account_id"
+       placeholder="AWS Account ID"
+       required
+       minlength="12"
+       maxlength="12"
+       aria-label="AWS Account ID"
+       hx-post="/environments/validate/aws_account_id"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="aws_account_id-helper"
+       value="{{ value }}" />
+<small id="aws_account_id-helper"
+       hx-swap-oob="true">Must have 12 letters</small>
+
+{% elif field == "aws_access_key_id" and is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="aws_access_key_id"
+       placeholder="Access Key ID"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Access Key ID"
+       hx-post="/environments/validate/aws_access_key_id"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="aws_access_key_id-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "aws_access_key_id" and not is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="aws_access_key_id"
+       placeholder="Access Key ID"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Access Key ID"
+       hx-post="/environments/validate/aws_access_key_id"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="aws_access_key_id-helper"
+       value="{{ value }}" />
+<small id="aws_access_key_id-helper"
+       hx-swap-oob="true">Must have atleast 3 letters</small>
+
+{% elif field == "aws_secret_access_key" and is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="aws_secret_access_key"
+       placeholder="Secret Access Key"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Secret Access Key"
+       hx-post="/environments/validate/aws_secret_access_key"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="aws_secret_access_key-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "aws_secret_access_key" and not is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="aws_secret_access_key"
+       placeholder="Secret Access Key"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Secret Access Key"
+       hx-post="/environments/validate/aws_secret_access_key"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="aws_secret_access_key-helper"
+       value="{{ value }}" />
+<small id="aws_secret_access_key-helper"
+       hx-swap-oob="true">Must have atleast 3 letters</small>
+
+{% endif %}
+
+<!-- Keep the sabe buttondisabled until ready_to_submit -->
+<button type="submit"
+        class="primary submit-btn"
+        id="submit-btn"
+        hx-swap-oob="true"
+        {% if not ready_to_submit %}disabled{% endif %}
+        _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Save</button>

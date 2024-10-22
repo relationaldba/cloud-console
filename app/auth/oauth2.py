@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 from app.config import settings
 from app.database import get_db
+from app.exceptions import InvalidCredentialsException
 
 SECRET_KEY = settings.auth_secret_key
 ALGORITHM = settings.auth_algorithm
@@ -86,7 +87,7 @@ def hx_get_current_user(
     access_token: Annotated[str | None, Cookie()] = None,
     db: Session = Depends(get_db),
 ):
-    credentials_exception = HTTPException(
+    credentials_exception = InvalidCredentialsException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},

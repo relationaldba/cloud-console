@@ -16,8 +16,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 if TYPE_CHECKING:
-    from .product_details import ProductDetail
-    from .stack_details import StackDetail
+    # from .product_details import ProductDetail
+    # from .stack_details import StackDetail
     from .users import User
 
 
@@ -92,14 +92,12 @@ class Product(Base):
     user: Mapped["User"] = relationship(
         back_populates="products",
     )
-    product_details: Mapped[List["ProductDetail"]] = relationship(
-        back_populates="product",
-    )
-    stack_details: Mapped[List["StackDetail"]] = relationship(
-        back_populates="product",
-    )
+    # product_details: Mapped[List["ProductDetail"]] = relationship(
+    #     back_populates="product",
+    # )
+    # stack_details: Mapped[List["StackDetail"]] = relationship(
+    #     back_populates="product",
+    # )
 
     __table_args__ = (Index("ix_products_id_active", "id", "active"),)
 
-
-# TODO: add product created by user

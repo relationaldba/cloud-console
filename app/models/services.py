@@ -59,12 +59,12 @@ class Service(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
-    service_details: Mapped[List["ServiceDetail"]] = relationship(
-        back_populates="service",
-    )
-    stack_details: Mapped[List["StackDetail"]] = relationship(
-        back_populates="service",
-    )
+    # service_details: Mapped[List["ServiceDetail"]] = relationship(
+    #     back_populates="service",
+    # )
+    # stack_details: Mapped[List["StackDetail"]] = relationship(
+    #     back_populates="service",
+    # )
 
 
 # TODO: add service created by user

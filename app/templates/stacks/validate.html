@@ -1,0 +1,87 @@
+{% if field == "name" and is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="name"
+       placeholder="Stack Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Stack Name"
+       hx-post="/stacks/validate/name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="name-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "name" and not is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="name"
+       placeholder="Stack Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Stack Name"
+       hx-post="/stacks/validate/name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="name-helper"
+       value="{{ value }}" />
+<small id="name-helper"
+       hx-swap-oob="true">Must have atleast 3 letters</small>
+
+{% elif field == "class_name" and is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="class_name"
+       placeholder="Stack Class Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Stack Class Name"
+       hx-post="/stacks/validate/class_name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="class_name-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "class_name" and not is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="class_name"
+       placeholder="Stack Class Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Stack Class Name"
+       hx-post="/stacks/validate/class_name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="class_name-helper"
+       value="{{ value }}" />
+<small id="class_name-helper"
+       hx-swap-oob="true">Must have atleast 3 letters</small>
+
+{% endif %}
+
+<!-- Keep the sabe buttondisabled until ready_to_submit -->
+<button type="submit"
+        class="primary submit-btn"
+        id="submit-btn"
+        hx-swap-oob="true"
+        {% if not ready_to_submit %}disabled{% endif %}
+        _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Save</button>

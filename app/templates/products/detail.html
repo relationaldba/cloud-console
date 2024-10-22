@@ -5,6 +5,7 @@
 
   <div class="modal-underlay"
        _="on click trigger closeModal"></div>
+
   <article class="modal-content">
 
     <form id="product-detail-form"
@@ -13,6 +14,7 @@
           hx-swap="outerHTML"
           hx-target="#product-detail-modal"
           hx-ext="json-enc">
+
       <div class="modal-body">
 
         <i class="bi bi-x-circle-fill modal-icon icon-secondary"
@@ -112,7 +114,6 @@
                  id="active"
                  aria-label="Product Active"
                  type="checkbox"
-                 _="on click trigger saveProduct on #product-detail-form"
                  {% if product.active %}checked{% endif %} />
         </label>
 
@@ -139,7 +140,7 @@
   </article>
 </dialog>
 
-
+<!-- Send an out of band update to the card with the updated contents -->
 
 <article class="card card-products"
          id='{{ "card-products-" ~ product.id }}'
@@ -147,7 +148,9 @@
          hx-target="body"
          hx-swap="beforeend"
          hx-swap-oob="true">
+
   <div class="card-content">
+
     <div class="card-body">
       <h4>{{ product.name }}</h4>
       <small>{{ product.version }}</small>

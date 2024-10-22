@@ -9,3 +9,11 @@ bcrypt
 alembic
 python-multipart
 jinja2
+
+
+aws-cdk-lib
+constructs
+boto3
+
+paramiko
+fabric

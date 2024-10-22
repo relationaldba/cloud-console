@@ -128,7 +128,6 @@ dialog article button {
   /* padding: 0.5rem; */
 }
 
-
 .content-icon {
   float: right;
   padding: 0rem 2rem;
@@ -151,8 +150,15 @@ dialog article button {
   /* border: 1px solid lightgray; */
   /* border-radius: 1rem; */
   padding: 1rem;
-  overflow-y: auto; 
+  overflow-y: auto;
   max-height: 85vh;
+}
+
+.content-options {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .error-message {

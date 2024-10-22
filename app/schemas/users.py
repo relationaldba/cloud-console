@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
+# from .environments import EnvironmentResponse
+
 
 class UserBase(BaseModel):
     """The base model for the User object"""
@@ -64,6 +66,8 @@ class UserAuthenticated(BaseModel):
 
 class UserResponse(UserBase):
     """The model for reading the User object"""
+
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
     active: bool

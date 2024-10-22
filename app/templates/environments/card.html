@@ -1,0 +1,22 @@
+<article class="card"
+         id='{{ "card-environments-" ~ environment.id }}'
+         hx-get='{{ "/environments/" ~ environment.id }}'
+         hx-target="body"
+         hx-swap="beforeend">
+
+  <div class="card-content">
+
+    <div class="card-body">
+      <h4>{{ environment.name }}</h4>
+
+      <small>Cloud Provider: {{ environment.cloudprovider.name }}</small>
+      <small>Region: {{ environment.aws_region }}</small>
+      <small>Account ID: {{ environment.aws_account_id }}</small>
+
+    </div>
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+</article>

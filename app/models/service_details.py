@@ -59,13 +59,13 @@ class ServiceDetail(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
-    service_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            column="services.id", name="fk_service_details_services", ondelete="CASCADE"
-        ),
-        name="service_id",
-        nullable=False,
-    )
-    service: Mapped["Service"] = relationship(
-        back_populates="service_details",
-    )
+    # service_id: Mapped[int] = mapped_column(
+    #     ForeignKey(
+    #         column="services.id", name="fk_service_details_services", ondelete="CASCADE"
+    #     ),
+    #     name="service_id",
+    #     nullable=False,
+    # )
+    # service: Mapped["Service"] = relationship(
+    #     back_populates="service_details",
+    # )

@@ -1,0 +1,21 @@
+<article class="card card-stacks"
+         id='{{ "card-stacks-" ~ stack.id }}'
+         hx-get='{{ "/stacks/" ~ stack.id }}'
+         hx-target="body"
+         hx-swap="beforeend">
+
+  <div class="card-content">
+
+    <div class="card-body">
+      <h4>{{ stack.name }}</h4>
+
+      <small>Cloud Provider: {{ stack.cloudprovider.name }}</small>
+      <small>Class Name: {{ stack.class_name }}</small>
+
+    </div>
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+</article>

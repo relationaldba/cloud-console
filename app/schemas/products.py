@@ -55,6 +55,10 @@ class ProductResponse(ProductBase):
 class ProductValidate(BaseModel):
     """The base model for the validation of the Product object"""
 
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+    )
+
     name: str | None = None
     version: str | None = None
     description: str | None = None

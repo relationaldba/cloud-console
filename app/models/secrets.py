@@ -29,8 +29,8 @@ class Secret(Base):
         autoincrement=True,
         nullable=False,
     )
-    key: Mapped[str] = mapped_column(
-        name="key",
+    name: Mapped[str] = mapped_column(
+        name="name",
         type_=String,
         nullable=False,
     )

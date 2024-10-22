@@ -1,0 +1,263 @@
+<dialog id="environment-detail-modal"
+        class="modal"
+        open=""
+        _="on closeModal add .closing then wait for animationend then remove me">
+
+  <div class="modal-underlay"
+       _="on click trigger closeModal"></div>
+
+  <article class="modal-content">
+
+    <form id="environment-detail-form"
+          {% if action == "read" %}
+          hx-get="/environments/{{ environment.id }}/edit"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#environment-detail-modal"
+          {% elif action == "create" %}
+          hx-post="/environments"
+          hx-validate="true"
+          hx-trigger="submit"
+          hx-swap="beforeend"
+          hx-target=".content-body"
+          {% elif action == "update" %}
+          hx-put="/environments/{{ environment.id }}"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#environment-detail-modal"
+          {% endif %}
+          hx-ext="json-enc">
+
+      <div class="modal-body">
+
+        <i class="bi bi-x-circle-fill modal-icon icon-secondary"
+           _="on click trigger closeModal"></i>
+
+        <h4>
+          Environment Details
+        </h4>
+
+        <label for="name">Environment Name <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="name"
+                 placeholder="Environment Name"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Environment Name"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/environments/validate/name"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ environment.name }}"
+                 readonly
+                 {% endif %} />
+          <small id="name-helper"></small>
+        </label>
+
+        <label for="cloudprovider_id">Cloud Provider <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <select name="cloudprovider_id"
+                  class="inline-editable"
+                  aria-label="Cloud Provider"
+                  required
+                  {% if action == "read" or action == "update" %}readonly{% endif %}>
+            {% if action == "read" or action == "update" %}
+            <option selected
+                    value="{{ environment.cloudprovider.id }}">{{ environment.cloudprovider.name }}</option>
+            {% else %}
+            <option selected
+                    disabled
+                    value="">Choose a Cloud Provider</option>
+            {% for cloudprovider in cloudproviders %}
+            <option value="{{ cloudprovider.id }}">{{ cloudprovider.name }}</option>
+            {% endfor %}
+            {% endif %}
+          </select>
+          <small id="cloudprovider_id-helper"></small>
+        </label>
+
+        <label for="aws_region">AWS Region <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <select name="aws_region"
+                  class="inline-editable"
+                  aria-label="Cloud Provider"
+                  required
+                  {% if action == "read" or action == "update" %}readonly{% endif %}>
+            {% if action == "read" or action == "update" %}
+            <option selected
+                    value="{{ environment.aws_region }}">{{ environment.aws_region }}</option>
+            {% else %}
+            <option selected
+                    disabled
+                    value="">Choose a Cloud Provider</option>
+            <option value="us-east-1">us-east-1</option>
+            <option value="us-east-2">us-east-2</option>
+            <option value="us-west-1">us-west-1</option>
+            <option value="us-west-2">us-west-2</option>
+            {% endif %}
+          </select>
+          <small id="cloudprovider_id-helper"></small>
+        </label>
+
+        <label for="aws_account_id">AWS Account ID <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="aws_account_id"
+                 placeholder="AWS Account ID"
+                 required
+                 minlength="12"
+                 maxlength="12"
+                 aria-label="AWS Account ID"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/environments/validate/aws_account_id"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ environment.aws_account_id }}"
+                 readonly
+                 {% endif %} />
+          <small id="aws_account_id-helper"></small>
+        </label>
+
+        <label for="aws_access_key_id">Access Key ID <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="aws_access_key_id"
+                 placeholder="Access Key ID"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Access Key ID"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/environments/validate/aws_access_key_id"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% elif action == "read" %}
+                 value="{{ environment.aws_access_key_id }}"
+                 readonly
+                 {% elif action == "update" %}
+                 value="{{ environment.aws_access_key_id }}"
+                 {% endif %} />
+          <small id="aws_access_key_id-helper"></small>
+        </label>
+
+        <label for="aws_secret_access_key">Secret Access Key <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="aws_secret_access_key"
+                 placeholder="Secret Access Key"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Secret Access Key"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/environments/validate/aws_secret_access_key"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% elif action == "read" %}
+                 value="{{ environment.aws_secret_access_key }}"
+                 readonly
+                 {% elif action == "update" %}
+                 value="{{ environment.aws_secret_access_key }}"
+                 {% endif %} />
+          <small id="aws_secret_access_key-helper"></small>
+        </label>
+
+        <label for="active">Active &nbsp;&nbsp;
+          <input name="active"
+                 id="active"
+                 aria-label="Environment Active"
+                 type="checkbox"
+                 {% if action == "read" or action == "create" %}disabled{% endif %}
+                 {% if environment is undefined or environment.active %}checked{% endif %} />
+        </label>
+
+        {% if action == "read" or action == "update" %}
+        <label>Created By &nbsp;{{ environment.creator }}</label>
+        <label>Created Date &nbsp;{{ environment.created_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        <label>Updated Date &nbsp;{{ environment.updated_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        {% endif %}
+
+        <label class="error-message"
+               id="error-message"
+               style="display: none;">
+        </label>
+
+        <label class="success-message"
+               id="success-message"
+               style="display: none;">
+        </label>
+
+        <label class="info-message"
+               id="info-message"
+               style="display: none;">
+        </label>
+      </div>
+
+      <div class="modal-footer">
+
+        {% if action == "read" %}
+        <button type="button"
+                class="secondary outline delete-btn"
+                id="delete-btn"
+                hx-delete="/environments/{{ environment.id }}"
+                hx-swap="outerHTML swap:1s"
+                hx-target="#card-environments-{{ environment.id }}"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Delete</button>
+        <button type="button"
+                class="primary edit-btn"
+                id="edit-btn"
+                hx-get="/environments/{{ environment.id }}/edit"
+                hx-swap="outerHTML"
+                hx-target="#environment-detail-modal"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Edit</button>
+        {% elif action == "update" or action == "create" %}
+        <button type="submit"
+                class="primary submit-btn"
+                id="submit-btn"
+                {% if action == "create" and not ready_to_submit %}disabled{% endif %}
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Save</button>
+        {% endif %}
+        <button type="button"
+                class="outline cancel-btn"
+                id="cancel-btn"
+                _="on click trigger closeModal end on htmx:beforeRequest set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @disabled">Cancel</button>
+      </div>
+
+    </form>
+  </article>
+</dialog>
+
+<!-- Send an out of band update to the card with the updated contents -->
+
+{% if action == "read" %}
+
+<article class="card"
+         id='{{ "card-environments-" ~ environment.id }}'
+         hx-get='{{ "/environments/" ~ environment.id }}'
+         hx-target="body"
+         hx-swap="beforeend"
+         hx-swap-oob="true">
+
+  <div class="card-content">
+
+    <div class="card-body">
+      <h4>{{ environment.name }}</h4>
+
+      <small>Cloud Provider: {{ environment.cloudprovider.name }}</small>
+      <small>Region: {{ environment.aws_region }}</small>
+      <small>Account ID: {{ environment.aws_account_id }}</small>
+
+    </div>
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+</article>
+{% endif %}

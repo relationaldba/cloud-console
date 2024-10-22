@@ -59,13 +59,13 @@ class ProductDetail(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
-    product_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            column="products.id", name="fk_product_details_products", ondelete="CASCADE"
-        ),
-        name="product_id",
-        nullable=False,
-    )
-    product: Mapped["Product"] = relationship(
-        back_populates="product_details",
-    )
+    # product_id: Mapped[int] = mapped_column(
+    #     ForeignKey(
+    #         column="products.id", name="fk_product_details_products", ondelete="CASCADE"
+    #     ),
+    #     name="product_id",
+    #     nullable=False,
+    # )
+    # product: Mapped["Product"] = relationship(
+    #     back_populates="product_details",
+    # )

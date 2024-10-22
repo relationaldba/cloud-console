@@ -33,3 +33,9 @@
 .icon-dark {
   color: var(--pico-color-grey-700);
 }
+
+
+.button-icon {
+  font-size: 1.25rem;
+  margin: 0.5rem;
+}

@@ -1,0 +1,210 @@
+<dialog id="stack-detail-modal"
+        class="modal"
+        open=""
+        _="on closeModal add .closing then wait for animationend then remove me">
+
+  <div class="modal-underlay"
+       _="on click trigger closeModal">
+  </div>
+
+  <article class="modal-content">
+
+    <form id="stack-detail-form"
+          {% if action == "read" %}
+          hx-get="/stacks/{{ stack.id }}/edit"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#stack-detail-modal"
+          {% elif action == "create" %}
+          hx-post="/stacks"
+          hx-validate="true"
+          hx-trigger="submit"
+          hx-swap="beforeend"
+          hx-target=".content-body"
+          {% elif action == "update" %}
+          hx-put="/stacks/{{ stack.id }}"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#stack-detail-modal"
+          {% endif %}
+          hx-ext="json-enc">
+
+      <div class="modal-body">
+
+        <i class="bi bi-x-circle-fill modal-icon icon-secondary"
+           _="on click trigger closeModal"></i>
+
+        <h4>
+          Stack Details
+        </h4>
+
+        <label for="name">Stack Name <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="name"
+                 placeholder="Stack Name"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Stack Name"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/stacks/validate/name"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ stack.name }}"
+                 readonly
+                 {% endif %} />
+          <small id="name-helper"></small>
+        </label>
+
+        <label for="cloudprovider_id">Cloud Provider <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <select name="cloudprovider_id"
+                  class="inline-editable"
+                  aria-label="Cloud Provider"
+                  required
+                  {% if action == "read" or action == "update" %}readonly{% endif %}>
+            {% if action == "read" or action == "update" %}
+            <option selected
+                    value="{{ stack.cloudprovider.id }}">{{ stack.cloudprovider.name }}</option>
+            {% else %}
+            <option selected
+                    disabled
+                    value="">Choose a Cloud Provider</option>
+            {% for cloudprovider in cloudproviders %}
+            <option value="{{ cloudprovider.id }}">{{ cloudprovider.name }}</option>
+            {% endfor %}
+            {% endif %}
+          </select>
+        </label>
+
+        <label for="class_name">Stack Class Name <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="class_name"
+                 placeholder="Stack Class Name"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Stack Class Name"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/stacks/validate/class_name"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ stack.class_name }}"
+                 readonly
+                 {% endif %} />
+          <small id="class_name-helper"></small>
+        </label>
+
+        <label for="description">Description
+          <input class="inline-editable"
+                 type="text"
+                 name="description"
+                 placeholder="Description"
+                 maxlength="256"
+                 aria-label="Description"
+                 hx-ext="json-enc"
+                 {% if action == "read" %}
+                 value="{{ stack.description }}"
+                 readonly
+                 {% elif action == "update" %}
+                 value="{{ stack.description }}"
+                 {% endif %} />
+        </label>
+
+        <label for="active">Active &nbsp;&nbsp;
+          <input name="active"
+                 id="active"
+                 aria-label="Stack Active"
+                 type="checkbox"
+                 {% if action == "read" or action == "create" %}disabled{% endif %}
+                 {% if stack is undefined or stack.active %}checked{% endif %} />
+        </label>
+
+        {% if action == "read" or action == "update" %}
+        <label>Created By &nbsp;{{ stack.creator }}</label>
+        <label>Created Date &nbsp;{{ stack.created_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        <label>Updated Date &nbsp;{{ stack.updated_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        {% endif %}
+
+        <label class="error-message"
+               id="error-message"
+               style="display: none;">
+        </label>
+
+        <label class="success-message"
+               id="success-message"
+               style="display: none;">
+        </label>
+
+        <label class="info-message"
+               id="info-message"
+               style="display: none;">
+        </label>
+      </div>
+
+      <div class="modal-footer">
+
+        {% if action == "read" %}
+        <button type="button"
+                class="secondary outline delete-btn"
+                id="delete-btn"
+                hx-delete="/stacks/{{ stack.id }}"
+                hx-swap="outerHTML swap:1s"
+                hx-target="#card-stacks-{{ stack.id }}"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Delete</button>
+        <button type="button"
+                class="primary edit-btn"
+                id="edit-btn"
+                hx-get="/stacks/{{ stack.id }}/edit"
+                hx-swap="outerHTML"
+                hx-target="#stack-detail-modal"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Edit</button>
+        {% elif action == "update" or action == "create" %}
+        <button type="submit"
+                class="primary submit-btn"
+                id="submit-btn"
+                {% if action == "create" and not ready_to_submit %}disabled{% endif %}
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Save</button>
+        {% endif %}
+        <button type="button"
+                class="outline cancel-btn"
+                id="cancel-btn"
+                _="on click trigger closeModal end on htmx:beforeRequest set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @disabled">Cancel</button>
+      </div>
+
+    </form>
+  </article>
+</dialog>
+
+<!-- Send an out of band update to the card with the updated contents -->
+
+{% if action == "read" %}
+
+<article class="card"
+         id='{{ "card-stacks-" ~ stack.id }}'
+         hx-get='{{ "/stacks/" ~ stack.id }}'
+         hx-target="body"
+         hx-swap="beforeend"
+         hx-swap-oob="true">
+
+  <div class="card-content">
+
+    <div class="card-body">
+      <h4>{{ stack.name }}</h4>
+
+      <small>Cloud Provider: {{ stack.cloudprovider.name }}</small>
+      <small>Class Name: {{ stack.class_name }}</small>
+
+    </div>
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+</article>
+{% endif %}

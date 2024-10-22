@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.auth import oauth2, utils, verify_access_token
-from app.config import settings
+from app.config import settings, config
 from app.database import get_db
 
 AUTH_COOKIE_EXPIRE_MINUTES = settings.auth_token_expire_minutes
@@ -140,7 +140,7 @@ def hx_login(
 
     # response.delete_cookie("access_token")
 
-    context = {"user": None}
+    context = {"current_user": None, "config": config}
     response = templates.TemplateResponse(
         request=request,
         name="login/login.html",
@@ -188,7 +188,7 @@ def hx_authenticate(
         return response
 
     except HTTPException:
-        context = {"authentication_failed": True}
+        context = {"authentication_failed": True, "config": config}
         response = templates.TemplateResponse(
             request=request,
             name="login/login.html",

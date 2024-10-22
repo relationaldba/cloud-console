@@ -1,13 +1,11 @@
-
-
 <div class="content-header">
 
   <h3>Products</h3>
 
-  <div class="content-action">
+  <!-- <div class="content-action">
     <i class="bi bi-x-circle-fill content-icon"
        _="on click trigger closeModal"></i>
-  </div>
+  </div> -->
 
   <p>Create and Manage your Products. Products can be added to a Stack and deployed on the cloud platform of your
     choice.</p>
@@ -15,23 +13,23 @@
 
 </div>
 
-
 <hr />
 
 <div class="content-body">
+
   <article class="card card-products card-add-products"
            hx-get="/products/create"
            hx-target=".content-body"
            hx-swap="beforeend">
+
     <div class="card-content">
+
       <div class="card-body">
         <h4>Add a Product</h4>
         <i class="bi bi-plus-circle-fill card-icon icon-primary"></i>
       </div>
     </div>
   </article>
-
-
 
   {% for product in products %} {% include "products/card.html" %} {% endfor %}
 </div>

@@ -1,4 +1,4 @@
-FROM python:3-slim
+FROM python:3.12-slim
 
 EXPOSE 8000
 
@@ -14,6 +14,12 @@ WORKDIR /home/appuser
 COPY requirements.txt .
 RUN python -m pip install --no-cache-dir --upgrade -r requirements.txt
 
+RUN apt-get update && \
+    apt-get install -y curl gnupg && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g aws-cdk && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy the files
 COPY ./app ./app

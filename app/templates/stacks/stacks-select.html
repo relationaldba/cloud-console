@@ -1,0 +1,18 @@
+<select name="stack_id"
+        id="stacks"
+        class="inline-editable"
+        aria-label="Stack"
+        required>
+  {% if action == "read" or action == "update" %}
+  <option selected
+          value="{{ deployment.stack.id }}">{{ deployment.stack.name }}</option>
+  {% else %}
+  <option selected
+          disabled
+          value="">Choose a Stack</option>
+  {% for stack in stacks %}
+  <option value="{{ stack.id }}">{{ stack.name }}</option>
+  {% endfor %}
+  {% endif %}
+</select>
+

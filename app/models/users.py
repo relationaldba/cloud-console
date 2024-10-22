@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, List
 from sqlalchemy import (
     TIMESTAMP,
     Boolean,
-    ForeignKey,
     Integer,
     String,
     func,
@@ -15,8 +14,10 @@ from app.database import Base
 
 if TYPE_CHECKING:
     from .deployments import Deployment
-    from .teams import Team
+    from .environments import Environment
     from .products import Product
+    from .stacks import Stack
+    from .cloudproviders import CloudProvider
 
 
 class User(Base):
@@ -88,6 +89,15 @@ class User(Base):
     deployments: Mapped[List["Deployment"]] = relationship(
         back_populates="user",
     )
-    products: Mapped[List["Product"]]= relationship(
+    products: Mapped[List["Product"]] = relationship(
+        back_populates="user",
+    )
+    environments: Mapped[List["Environment"]] = relationship(
+        back_populates="user",
+    )
+    stacks: Mapped[List["Stack"]] = relationship(
+        back_populates="user",
+    )
+    cloudproviders: Mapped[List["CloudProvider"]] = relationship(
         back_populates="user",
     )

@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
+from app.config import config
 from app.auth import hx_get_current_user
 from app.database import get_db
 
@@ -33,7 +34,7 @@ async def home(
     current_user=Depends(hx_get_current_user),
     db: Session = Depends(get_db),
 ) -> HTMLResponse:
-    context = {"user": current_user}
+    context = {"current_user": current_user, "config": config}
 
     response = templates.TemplateResponse(
         request=request, name="index.html", context=context

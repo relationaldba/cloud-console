@@ -37,6 +37,7 @@ templates = Jinja2Templates(directory="app/templates")
 #
 ################################################################################
 
+
 @json_router.get(
     "/products",
     status_code=status.HTTP_200_OK,
@@ -125,7 +126,7 @@ def create_product(
         .where(models.Product.version == new_product.version),
     )
 
-    if product is not None:
+    if product:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail={
@@ -137,8 +138,6 @@ def create_product(
         )
 
     product = models.Product(**new_product.model_dump())
-
-    # p.user_id = current_user.id
     db.add(product)
     db.commit()
     db.refresh(instance=product)
@@ -159,7 +158,7 @@ def delete_product(
 
     product = db.scalar(select(models.Product).where(models.Product.id == id))
 
-    if product is None:
+    if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={
@@ -169,12 +168,6 @@ def delete_product(
                 "path": request.url.path,
             },
         )
-
-    # elif product.user_id != current_user.id:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="not authorized to perform requested action",
-    #     )
 
     db.delete(product)
     db.commit()
@@ -195,7 +188,7 @@ def update_product(
     """Update a product."""
     product = db.scalar(select(models.Product).where(models.Product.id == id))
 
-    if product is None:
+    if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={
@@ -205,26 +198,11 @@ def update_product(
                 "path": request.url.path,
             },
         )
-    # elif product.user_id != current_user.id:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="not authorized to perform requested action",
-    #     )
-    # print(updated_product.model_dump(exclude_none=True))
-    # product.name = updated_product.name
-    # product.active = updated_product.active
-    
 
     for key, value in updated_product.model_dump(
         exclude_unset=False, exclude_none=True
     ).items():
         setattr(product, key, value)
-
-    
-
-    # product = models.Product(**updated_product.model_dump())
-
-    # db.add(product)
 
     db.commit()
     db.refresh(instance=product)
@@ -387,7 +365,6 @@ def hx_get_product(
         name="products/detail.html",
         context=context,
     )
-    # raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return response
 
 
@@ -532,11 +509,11 @@ def hx_validate_product_version(
     product: schemas.ProductValidate,
     db: Session = Depends(get_db),
 ):
-    version_check = db.scalars(
+    version_exists = db.scalars(
         select(models.Product).where(models.Product.version == product.version)
     ).first()
 
-    if product.version and not version_check and len(product.version) >= 3:
+    if product.version and not version_exists and len(product.version) >= 3:
         return True
     return False
 

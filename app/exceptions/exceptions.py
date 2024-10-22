@@ -1,43 +1,47 @@
-class CloudStackApiError(Exception):
+from fastapi import HTTPException
+
+
+class CloudStackApiException(HTTPException):
     """base exception class"""
 
-    def __init__(self, message: str = "Service is unavailable", name: str = "CloudStackApiError"):
-        self.message = message
-        self.name = name
-        super().__init__(self.message, self.name)
+    def __init__(self, status_code: int, detail: str, headers: dict | None = None):
+        self.status_code = status_code
+        self.detail = detail
+        self.headers = headers
+        super().__init__(self.status_code, self.detail)
 
 
-class ServiceError(CloudStackApiError):
+class ServiceException(CloudStackApiException):
     """failures in external services or APIs, like a database or a third-party service"""
 
     pass
 
 
-class EntityDoesNotExistError(CloudStackApiError):
+class EntityDoesNotExistException(CloudStackApiException):
     """database returns nothing"""
 
     pass
 
 
-class EntityAlreadyExistsError(CloudStackApiError):
+class EntityAlreadyExistsException(CloudStackApiException):
     """conflict detected, like trying to create a resource that already exists"""
 
     pass
 
 
-class InvalidOperationError(CloudStackApiError):
+class InvalidOperationException(CloudStackApiException):
     """invalid operations like trying to delete a non-existing entity, etc."""
 
     pass
 
 
-class AuthenticationError(CloudStackApiError):
+class InvalidCredentialsException(CloudStackApiException):
     """invalid authentication credentials"""
 
     pass
 
 
-class InvalidTokenError(CloudStackApiError):
+class InvalidTokenException(CloudStackApiException):
     """invalid token"""
 
     pass
