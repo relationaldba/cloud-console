@@ -1,29 +1,30 @@
 [data-theme="light"],
 :root:not([data-theme="dark"]) {
-  --pico-input-bg: var(--pico-color-slate-50);
-  --pico-input-border: var(--pico-color-slate-50);
+  --pico-input-bg: var(--pico-color-grey-50);
+  --pico-input-border: var(--pico-color-grey-50);
   --pico-input-border-focus: var(--pico-primary);
-  --pico-input-color: var(--pico-color-slate-750);
-  --pico-label-color: var(--pico-color-slate-500);
-  --pico-input-color-focus: var(--pico-color-slate-950);
-  --pico-input-placeholder-color: var(--pico-color-slate-200);
-  --pico-form-element-disabled-opacity: 0.8;
+  --pico-input-color: var(--pico-color-grey-900);
+  --pico-label-color: var(--pico-color-grey-500);
+  --pico-input-color-focus: var(--pico-color-grey-950);
+  --pico-input-placeholder-color: var(--pico-color-grey-200);
+  --pico-form-element-disabled-opacity: 0.7;
 }
 
 [data-theme="dark"],
 :root:not([data-theme="light"]) {
-  --pico-input-bg: var(--pico-color-slate-800);
-  --pico-input-border: var(--pico-color-slate-700);
+  --pico-input-bg: var(--pico-color-grey-800);
+  --pico-input-border: var(--pico-color-grey-700);
   --pico-input-border-focus: var(--pico-primary);
-  --pico-input-color: var(--pico-color-slate-150);
-  --pico-label-color: var(--pico-color-slate-400);
-  --pico-input-color-focus: var(--pico-color-slate-50);
-  --pico-input-placeholder-color: var(--pico-color-slate-700);
-  --pico-form-element-disabled-opacity: 0.8;
+  --pico-input-color: var(--pico-color-grey-50);
+  --pico-label-color: var(--pico-color-grey-400);
+  --pico-input-color-focus: var(--pico-color-grey-50);
+  --pico-input-placeholder-color: var(--pico-color-grey-700);
+  --pico-form-element-disabled-opacity: 0.7;
 }
 
 select.inline-editable {
   border: none;
+  color: var(--pico-input-color);
   border-bottom: 1px solid var(--pico-input-border);
   border-radius: 0rem;
   background-color: transparent;
@@ -34,6 +35,10 @@ select.inline-editable {
   appearance: none;
   padding: 0;
   padding-inline-start: 1rem !important;
+}
+select.inline-editable[readonly] {
+  opacity: var(--pico-form-element-disabled-opacity);
+  pointer-events: none;
 }
 
 input.inline-editable {

@@ -34,6 +34,9 @@
   color: var(--pico-color-grey-700);
 }
 
+.icon-fhir {
+  color: var(--pico-color-orange-400);
+}
 
 .button-icon {
   font-size: 1.25rem;

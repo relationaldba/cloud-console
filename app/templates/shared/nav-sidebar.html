@@ -11,73 +11,50 @@
 
 <!-- hx-on::response-error="handleHTTPError(event)" -->
 
-<div class="sidenav-body">
+<div class="sidenav-body"
+     id="sidenav-body">
 
-  <h5><a class=""
-       href="/">Home</a></h5>
+  <div class="sidenav-item sidenav-item-home sidenav-item-active"
+       hx-get="/"
+       hx-trigger="click"
+       hx-swap="outerHTML"
+       hx-target="html">Home</div>
 
-  <hr />
-
-  <h5><a class=""
-       href="#"
+  <div class="sidenav-item sidenav-item-deployments"
        hx-get="/deployments"
        hx-trigger="click"
        hx-swap="innerHTML"
-       hx-target=".content-root">Deployments</a></h5>
+       hx-target=".content-root">Deployments</div>
 
-  <hr />
-
-  <h5><a class=""
-       href="#"
+  <div class="sidenav-item sidenav-item-stacks"
        hx-get="/stacks"
        hx-trigger="click"
        hx-swap="innerHTML"
-       hx-target=".content-root">Stacks</a></h5>
+       hx-target=".content-root">Stacks</div>
 
-  <hr />
-
-  <h5><a class=""
-       href="#"
+  <div class="sidenav-item sidenav-item-environments"
        hx-get="/environments"
        hx-trigger="click"
        hx-swap="innerHTML"
-       hx-target=".content-root">Environments</a></h5>
+       hx-target=".content-root">Environments</div>
 
-  <hr />
-
-  <h5><a class=""
-       href="#"
+  <div class="sidenav-item sidenav-item-products"
        hx-get="/products"
        hx-trigger="click"
        hx-swap="innerHTML"
-       hx-target=".content-root">Products</a></h5>
+       hx-target=".content-root">Products</div>
 
-  <hr />
-
-  <h5><a class=""
-       href="#"
+  <div class="sidenav-item sidenav-item-cloudproviders"
        hx-get="/cloudproviders"
        hx-trigger="click"
        hx-swap="innerHTML"
-       hx-target=".content-root">Cloud Providers</a></h5>
+       hx-target=".content-root">Cloud Providers</div>
 
-  <hr />
-
-  <h5><a class="button outline"
-       href="#"
-       hx-get="/teams"
-       hx-trigger="click"
-       hx-swap="innerHTML"
-       hx-target=".content-root">Teams</a></h5>
-
-  <hr />
-
-  <h5><a class="button outline"
-       href="#"
+  <div class="sidenav-item sidenav-item-users"
        hx-get="/users"
        hx-trigger="click"
        hx-swap="innerHTML"
-       hx-target=".content-root">Users</a></h5>
+       hx-target=".content-root">Users</div>
 
 </div>
 

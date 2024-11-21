@@ -49,11 +49,11 @@ class EnvironmentResponse(BaseModel):
     aws_access_key_id: str
     aws_secret_access_key: str
     aws_region: str
+    # creator: EmailStr
     created_at: datetime
     updated_at: datetime
-    creator: EmailStr
 
-    cloudprovider: CloudProviderMiniResponse
+    # cloudprovider: CloudProviderMiniResponse
 
 
 class EnvironmentMiniResponse(BaseModel):
@@ -64,6 +64,7 @@ class EnvironmentMiniResponse(BaseModel):
     id: int
     name: str
     aws_region: str
+    # cloudprovider: CloudProviderMiniResponse
 
 
 class EnvironmentValidate(BaseModel):

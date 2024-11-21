@@ -120,7 +120,7 @@ html_router.include_router(
     include_in_schema=False,
 )
 html_router.include_router(
-    validations.html_router,
-    tags=["modals"],
+    users.html_router,
+    tags=["users"],
     include_in_schema=False,
 )

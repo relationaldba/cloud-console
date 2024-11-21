@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     TIMESTAMP,
@@ -8,19 +8,18 @@ from sqlalchemy import (
     String,
     func,
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
 
 if TYPE_CHECKING:
-    from .deployments import Deployment
-    from .users import User
+    pass
 
 
-class Team(Base):
-    """ORM Class that represents the `user` table"""
+class Group(Base):
+    """ORM Class that represents the `groups` table"""
 
-    __tablename__ = "teams"
+    __tablename__ = "groups"
 
     id: Mapped[int] = mapped_column(
         name="id",
@@ -54,9 +53,3 @@ class Team(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
-    # users: Mapped[List["User"]] = relationship(
-    #     back_populates="team",
-    # )
-    # deployments: Mapped[List["Deployment"]] = relationship(
-    #     back_populates="team",
-    # )

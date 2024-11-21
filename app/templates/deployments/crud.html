@@ -96,7 +96,7 @@
             {% else %}
             <option selected
                     disabled
-                    value="">Choose a Environment</option>
+                    value="">Choose an Environment</option>
 
             {% endif %}
           </select>
@@ -122,6 +122,27 @@
           </select>
         </label>
 
+        <label for="product_id">Product <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <select name="product_id"
+                  id="products"
+                  class="inline-editable"
+                  aria-label="Product"
+                  required
+                  {% if action == "read" or action == "update" %}readonly{% endif %}>
+            {% if action == "read" or action == "update" %}
+            <option selected
+                    value="{{ deployment.product.id }}">{{ deployment.product.name }} - {{ deployment.product.version }}</option>
+            {% else %}
+            <option selected
+                    disabled
+                    value="">Choose a Product</option>
+            {% for product in products %}
+            <option value="{{ product.id }}">{{ product.name }} - {{ product.version }}</option>
+            {% endfor %}
+            {% endif %}
+          </select>
+        </label>
+
         <label for="description">Description
           <input class="inline-editable"
                  type="text"
@@ -139,14 +160,69 @@
                  {% endif %} />
         </label>
 
+        {% if action == "read" %}
+        {% for stack_property in deployment.stack_properties %}
+
+        {% if stack_property.name == "route53_a_record_domain_name" %}
+        <!-- <label>URL: https://{{ stack_property.value }}</label> -->
+        <label for="url"><a href="https://{{ stack_property.value }}" target="_blank">URL</a>
+          <input class="inline-editable"
+                 type="text"
+                 name="url"
+                 value="https://{{ stack_property.value }}"
+                 readonly /></label>
+        {% endif %}
+
+        {% if stack_property.name == "ec2_instance_public_ip" %}
+        <!-- <label>Public IP: {{ stack_property.value }}</label> -->
+        <label for="public_ip">Public IP
+          <input class="inline-editable"
+                 type="text"
+                 name="public_ip"
+                 value="{{ stack_property.value }}"
+                 readonly /></label>
+        {% endif %}
+
+        {% if stack_property.name == "ec2_instance_availability_zone" %}
+        <!-- <label>Stack AZ: {{ stack_property.value }}</label> -->
+        <label for="az">Availability Zone
+          <input class="inline-editable"
+                 type="text"
+                 name="az"
+                 value="{{ stack_property.value }}"
+                 readonly /></label>
+        {% endif %}
+
+        {% if stack_property.name == "ec2_instance_id" %}
+        <!-- <label>EC2 Instance: {{ stack_property.value }}</label> -->
+        <label for="instance_id">EC2 Instance ID
+          <input class="inline-editable"
+                 type="text"
+                 name="instance_id"
+                 value="{{ stack_property.value }}"
+                 readonly /></label>
+        {% endif %}
+
+        {% endfor %}
+        {% endif %}
+
         {% if action == "read" or action == "update" %}
-        <label>Status: {{ deployment.status }}</label>
+
+        <label for="status">Status
+          <input class="inline-editable"
+                 type="text"
+                 name="status"
+                 value="{{ deployment.status }}"
+                 readonly /></label>
+        <!-- <label>Status: {{ deployment.status }}</label> -->
         <label>Created By &nbsp;{{ deployment.creator }}</label>
         <label>Created Date &nbsp;{{ deployment.created_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
         <label>Updated Date &nbsp;{{ deployment.updated_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+
         {% endif %}
 
-        <label class="error-message"
+        <label class="
+                 error-message"
                id="error-message"
                style="display: none;">
         </label>
@@ -165,12 +241,14 @@
       <div class="modal-footer">
 
         {% if action == "read" %}
+        {# <!-- hx-swap="outerHTML swap:1s" --> #}
         <button type="button"
                 class="secondary outline delete-btn"
                 id="delete-btn"
                 hx-delete="/deployments/{{ deployment.id }}"
-                hx-swap="outerHTML swap:1s"
+                hx-swap="outerHTML"
                 hx-target="#card-deployments-{{ deployment.id }}"
+                hx-ext="json-enc"
                 _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Delete</button>
         <button type="button"
                 class="primary edit-btn"
@@ -178,6 +256,7 @@
                 hx-get="/deployments/{{ deployment.id }}/edit"
                 hx-swap="outerHTML"
                 hx-target="#deployment-detail-modal"
+                hx-ext="json-enc"
                 _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Edit</button>
         {% elif action == "update" or action == "create" %}
         <button type="submit"
@@ -200,7 +279,7 @@
 
 {% if action == "read" %}
 
-<article class="card"
+<article class="card card-deployments"
          id='{{ "card-deployments-" ~ deployment.id }}'
          hx-get='{{ "/deployments/" ~ deployment.id }}'
          hx-target="body"
@@ -210,14 +289,28 @@
   <div class="card-content">
 
     <div class="card-body">
-      <h4>{{ deployment.name }}</h4>
 
-      <small>Code: {{ deployment.code }}</small>
+      <h4>{{ deployment.name }}</h4>
+      <h6>Status: <strong>{{ deployment.status }}</strong></h6>
+
+      <small>Cloud Provider: {{ deployment.cloudprovider.name }}</small>
+      <small>Region: {{ deployment.environment.aws_region }}</small>
+      <small>Environment: {{ deployment.environment.name }}</small>
+      <small>Stack: {{ deployment.stack.name }}</small>
 
     </div>
 
     <div class="card-footer">
+
+      {% if deployment.status == "ONLINE" %}
+      <i class="bi bi-fire card-icon icon-fhir"></i>
+      {% elif deployment.status == "DELETED" %}
+      <i class="bi bi-fire card-icon icon-secondary"></i>
+      {% else %}
+      <progress></progress>
+      {% endif %}
       <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+
     </div>
   </div>
 </article>

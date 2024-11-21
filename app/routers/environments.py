@@ -326,7 +326,7 @@ def hx_edit_environment(
     current_user=Depends(hx_get_current_user),
     db: Session = Depends(get_db),
 ):
-    """Get a environment by id"""
+    """Edit a environment by id"""
 
     try:
         environment = get_environment(

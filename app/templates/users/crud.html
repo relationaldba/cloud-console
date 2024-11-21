@@ -1,0 +1,220 @@
+<dialog id="user-detail-modal"
+        class="modal"
+        open=""
+        _="on closeModal add .closing then wait for animationend then remove me">
+
+  <div class="modal-underlay"
+       _="on click trigger closeModal"></div>
+
+  <article class="modal-content">
+
+    <form id="user-detail-form"
+          {% if action == "read" %}
+          hx-get="/users/{{ user.id }}/edit"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#user-detail-modal"
+          {% elif action == "create" %}
+          hx-post="/users"
+          hx-validate="true"
+          hx-trigger="submit"
+          hx-swap="beforeend"
+          hx-target=".content-body"
+          {% elif action == "update" %}
+          hx-put="/users/{{ user.id }}"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#user-detail-modal"
+          {% endif %}
+          hx-ext="json-enc">
+
+      <div class="modal-body">
+
+        <i class="bi bi-x-circle-fill modal-icon icon-secondary"
+           _="on click trigger closeModal"></i>
+
+        <h4>
+          User Details
+        </h4>
+
+        <label for="name">First Name <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="first_name"
+                 placeholder="First Name"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="First Name"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/users/validate/first_name"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% elif action == "read" %}
+                 value="{{ user.first_name }}"
+                 readonly
+                 {% elif action == "update" %}
+                 value="{{ user.first_name }}"
+                 {% endif %} />
+          <small id="first_name-helper"></small>
+        </label>
+
+        <label for="last_name">Last Name <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="last_name"
+                 placeholder="Last Name"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Last Name"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/users/validate/last_name"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% elif action == "read" %}
+                 value="{{ user.last_name }}"
+                 readonly
+                 {% elif action == "update" %}
+                 value="{{ user.last_name }}"
+                 {% endif %} />
+          <small id="last_name-helper"></small>
+        </label>
+
+        <label for="email">Email <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="email"
+                 placeholder="Email"
+                 required
+                 minlength="3"
+                 maxlength="128"
+                 aria-label="Email"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/users/validate/email"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ user.email }}"
+                 readonly
+                 {% endif %} />
+          <small id="email-helper"></small>
+        </label>
+
+        <label for="password">Password <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="password"
+                 name="password"
+                 placeholder="Password"
+                 required
+                 minlength="3"
+                 maxlength="128"
+                 aria-label="Password"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/users/validate/password"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value=""
+                 {% endif %} />
+          <small id="password-helper"></small>
+        </label>
+
+        <label for="active">Active &nbsp;&nbsp;
+          <input name="active"
+                 id="active"
+                 aria-label="User Active"
+                 type="checkbox"
+                 {% if action == "read" or action == "create" %}readonly{% endif %}
+                 {% if user is undefined or user.active %}checked{% endif %} />
+        </label>
+
+        {% if action == "read" or action == "update" %}
+        <label>Created By &nbsp;{{ user.creator }}</label>
+        <label>Last Login &nbsp;{% if user.last_login_at %}{{ user.last_login_at.strftime('%Y-%m-%d %H:%M %Z') }}{% endif %}</label>
+        <label>Created Date &nbsp;{{ user.created_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        <label>Updated Date &nbsp;{{ user.updated_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        {% endif %}
+
+        <label class="error-message"
+               id="error-message"
+               style="display: none;">
+        </label>
+
+        <label class="success-message"
+               id="success-message"
+               style="display: none;">
+        </label>
+
+        <label class="info-message"
+               id="info-message"
+               style="display: none;">
+        </label>
+      </div>
+
+      <div class="modal-footer">
+
+        {% if action == "read" %}
+        <button type="button"
+                class="secondary outline delete-btn"
+                id="delete-btn"
+                hx-delete="/users/{{ user.id }}"
+                hx-swap="outerHTML swap:1s"
+                hx-target="#card-users-{{ user.id }}"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Delete</button>
+        <button type="button"
+                class="primary edit-btn"
+                id="edit-btn"
+                hx-get="/users/{{ user.id }}/edit"
+                hx-swap="outerHTML"
+                hx-target="#user-detail-modal"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Edit</button>
+        {% elif action == "update" or action == "create" %}
+        <button type="submit"
+                class="primary submit-btn"
+                id="submit-btn"
+                {% if action == "create" and not ready_to_submit %}disabled{% endif %}
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Save</button>
+        {% endif %}
+        <button type="button"
+                class="outline cancel-btn"
+                id="cancel-btn"
+                _="on click trigger closeModal end on htmx:beforeRequest set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @disabled">Cancel</button>
+      </div>
+
+    </form>
+  </article>
+</dialog>
+
+<!-- Send an out of band update to the card with the updated contents -->
+
+{% if action == "read" %}
+
+<article class="card"
+         id='{{ "card-users-" ~ user.id }}'
+         hx-get='{{ "/users/" ~ user.id }}'
+         hx-target="body"
+         hx-swap="beforeend"
+         hx-swap-oob="true">
+
+  <div class="card-content">
+  
+    <div class="card-body">
+
+      <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+      <small>{{ user.email }}</small>
+      <small>Active: {{ user.active }}</small>
+      <small>Last Login: {% if user.last_login_at %}{{ user.last_login_at.strftime('%Y-%m-%d %H:%M %Z') }}{% endif %}</small>
+  
+    </div>
+  
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+  </article>
+{% endif %}

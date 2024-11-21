@@ -1,7 +1,7 @@
 /* @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"); */
 
 :root {
-  --pico-font-family: "Lato", "Inter", "Raleway", "Poppins", "Open Sans", sans-serif, system-ui;
+  --pico-font-family: "Roboto", system-ui, -apple-system sans-serif, sans-serif; /*  "Inter", "Open Sans", "Lato", "Raleway", "Poppins"; */
   --pico-font-size: 106.25%;
   /* --pico-font-size: 131.25%; */
   font-optical-sizing: auto;
@@ -92,9 +92,9 @@ dialog article button {
   /* margin: 0; */
   /* padding: 0.5rem; */
   gap: 1rem;
-  border: 1px solid lightgray;
+  border-right: 1px solid lightgray;
 
-  border-radius: 1rem;
+  /* border-radius: 1rem; */
   padding: 1rem;
 }
 

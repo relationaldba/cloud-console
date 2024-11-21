@@ -1,13 +1,15 @@
+import re
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import select
+from sqlalchemy import select, true
 from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.auth import get_current_user, hx_get_current_user
+from app.aws_stacks import aws_ec2standalone
 from app.database import get_db
 
 html_router = APIRouter()
@@ -35,17 +37,28 @@ def get_all_deployments(
     request: Request,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
-    limit: int = 50,
+    limit: int = 10,
     skip: int = 0,
     search: str | None = "",
+    deleted: bool = False,
+    cloudprovider_id: int | None = None,
 ):
-    """Get all deployments in ascending order of name"""
+    """Get all deployments in ascending order of created_at"""
 
     deployments = db.scalars(
         select(models.Deployment)
-        .where(models.Deployment.name.contains(search))
-        # .where(models.Deployment.active)
-        .order_by(models.Deployment.name)
+        .where(models.Deployment.name.contains(search) if search else true())
+        .where(
+            models.Deployment.deleted_at.isnot(None)
+            if deleted
+            else models.Deployment.deleted_at.is_(None)
+        )
+        .where(
+            models.Deployment.cloudprovider_id == cloudprovider_id
+            if cloudprovider_id
+            else true()
+        )
+        .order_by(models.Deployment.created_at.desc())
         .limit(limit=limit)
         .offset(skip)
     ).all()
@@ -54,19 +67,12 @@ def get_all_deployments(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={
-                "error_code": "ENVIRONMENT_NOT_FOUND",
+                "error_code": "DEPLOYMENT_NOT_FOUND",
                 "module": "deployments",
                 "message": "The requested deployment(s) could not be found, or you do not have permission to access them.",
                 "path": request.url.path,
             },
         )
-
-    for deployment in deployments:
-        user = db.scalar(
-            select(models.User).where(models.User.id == deployment.created_by)
-        )
-        if user:
-            deployment.creator = user.email
 
     return deployments
 
@@ -90,28 +96,25 @@ def get_deployment(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={
-                "error_code": "ENVIRONMENT_NOT_FOUND",
+                "error_code": "DEPLOYMENT_NOT_FOUND",
                 "module": "deployments",
                 "message": "The requested deployment(s) could not be found, or you do not have permission to access them.",
                 "path": request.url.path,
             },
         )
 
-    user = db.scalar(select(models.User).where(models.User.id == deployment.created_by))
-    if user:
-        deployment.creator = user.email
-
     return deployment
 
 
 @json_router.post(
     path="/deployments",
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_202_ACCEPTED,
     response_model=schemas.DeploymentResponse,
 )
 def create_deployment(
     new_deployment: schemas.DeploymentCreate,
     request: Request,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -119,37 +122,130 @@ def create_deployment(
 
     # Check if the deployment already exists, if yes, then raise an error
     deployment = db.scalar(
-        select(models.Deployment).where(models.Deployment.name == new_deployment.name)
+        select(models.Deployment).where(
+            models.Deployment.name == new_deployment.name.upper()
+        )
     )
 
+    # Verify the deployment does not already exist
     if deployment:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail={
-                "error_code": "ENVIRONMENT_EXISTS",
+                "error_code": "DEPLOYMENT_EXISTS",
                 "module": "deployments",
                 "message": "The deployment(s) you are trying to add already exist. Verify the details and try again.",
                 "path": request.url.path,
             },
         )
 
-    deployment = models.Deployment(
-        **new_deployment.model_dump(), created_by=current_user.id
+    # Verify the environment exists
+    environment = db.scalar(
+        select(models.Environment).where(
+            models.Environment.id == new_deployment.environment_id
+        )
     )
+    if not environment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "error_code": "ENVIRONMENT_NOT_FOUND",
+                "module": "deployments",
+                "message": "The requested environment(s) could not be found, or you do not have permission to access them.",
+                "path": request.url.path,
+            },
+        )
+
+    # Verify the stack exists
+    stack = db.scalar(
+        select(models.Stack).where(models.Stack.id == new_deployment.stack_id)
+    )
+    if not stack:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "error_code": "STACK_NOT_FOUND",
+                "module": "deployments",
+                "message": "The requested stack(s) could not be found, or you do not have permission to access them.",
+                "path": request.url.path,
+            },
+        )
+
+    # Verify the product exists
+    product = db.scalar(
+        select(models.Product).where(models.Product.id == new_deployment.product_id)
+    )
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "error_code": "PRODUCT_NOT_FOUND",
+                "module": "deployments",
+                "message": "The requested product(s) could not be found, or you do not have permission to access them.",
+                "path": request.url.path,
+            },
+        )
+
+    # Store the stack and product properties in a separate variable
+    # then remove the properties from the new_deployment object
+    # the stack and product properties will be added after the deployment is created
+    stack_properties = new_deployment.stack_properties or []
+    # delattr(new_deployment, "stack_properties")
+    product_properties = new_deployment.product_properties or []
+    # delattr(new_deployment, "product_properties")
+    deployment = models.Deployment(
+        **new_deployment.model_dump(exclude={"stack_properties", "product_properties"}),
+        created_by=current_user.id,
+    )
+
+    # Add the deployment to the database
     db.add(deployment)
-    db.commit()
+    db.flush()
     db.refresh(instance=deployment)
-    deployment.creator = current_user.email
+
+    if stack_properties:
+        for stack_property in stack_properties:
+            property = models.StackProperty(
+                **stack_property.model_dump(),
+                stack_id=deployment.stack_id,
+                deployment_id=deployment.id,
+            )
+            db.add(property)
+
+    if product_properties:
+        for product_property in product_properties:
+            property = models.ProductProperty(
+                **product_property.model_dump(),
+                product_id=deployment.product_id,
+                deployment_id=deployment.id,
+            )
+            db.add(property)
+
+    db.commit()
+
+    # Add code to create a FastAPI background task to synthesize and deploy the stack
+    if stack.class_name == "AWSEc2Standalone":
+        background_tasks.add_task(
+            aws_ec2standalone.synth_and_deploy,
+            deployment_id=deployment.id,
+            deployment_name=deployment.name,
+            vpc_cidr="10.24.1.0/24",
+            db=db,
+        )
+    # TODO: Add code to dynamically assign an unused VPC CIDR to the deployment
+
     return deployment
 
 
 @json_router.delete(
     path="/deployments/{id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_202_ACCEPTED,
+    response_model=schemas.DeploymentResponse,
 )
 def delete_deployment(
     id: int,
     request: Request,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -161,15 +257,40 @@ def delete_deployment(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={
-                "error_code": "ENVIRONMENT_NOT_FOUND",
+                "error_code": "DEPLOYMENT_NOT_FOUND",
                 "module": "deployments",
                 "message": "The requested deployment(s) could not be found, or you do not have permission to access them.",
                 "path": request.url.path,
             },
         )
 
-    db.delete(deployment)
+    # Verify the stack exists
+    stack = db.scalar(
+        select(models.Stack).where(models.Stack.id == deployment.stack_id)
+    )
+    if not stack:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "error_code": "STACK_NOT_FOUND",
+                "module": "deployments",
+                "message": "The requested stack(s) could not be found, or you do not have permission to access them.",
+                "path": request.url.path,
+            },
+        )
+
+    deployment.status = models.DeploymentStatusEnum.DELETING
     db.commit()
+
+    if stack.class_name == "AWSEc2Standalone":
+        background_tasks.add_task(
+            aws_ec2standalone.destroy_stack,
+            deployment_id=deployment.id,
+            deployment_name=deployment.name,
+            db=db,
+        )
+
+    return deployment
 
 
 @json_router.put(
@@ -191,7 +312,7 @@ def update_deployment(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={
-                "error_code": "ENVIRONMENT_NOT_FOUND",
+                "error_code": "DEPLOYMENT_NOT_FOUND",
                 "module": "deployments",
                 "message": "The requested deployment(s) could not be found, or you do not have permission to access them.",
                 "path": request.url.path,
@@ -205,9 +326,6 @@ def update_deployment(
 
     db.commit()
     db.refresh(instance=deployment)
-    user = db.scalar(select(models.User).where(models.User.id == deployment.created_by))
-    if user:
-        deployment.creator = user.email
     return deployment
 
 
@@ -244,6 +362,21 @@ async def hx_get_all_deployments(
             current_user=current_user,
             db=db,
         )
+
+        for deployment in deployments:
+            deployment.environment = db.scalar(
+                select(models.Environment).where(
+                    models.Environment.id == deployment.environment_id
+                )
+            )
+            deployment.cloudprovider = db.scalar(
+                select(models.CloudProvider).where(
+                    models.CloudProvider.id == deployment.environment.cloudprovider_id
+                )
+            )
+            deployment.stack = db.scalar(
+                select(models.Stack).where(models.Stack.id == deployment.stack_id)
+            )
     except HTTPException as e:
         if e.status_code == status.HTTP_404_NOT_FOUND:
             deployments = []
@@ -277,9 +410,14 @@ def hx_deployment_create_form(
     db: Session = Depends(get_db),
 ):
     """Get a deployment by id"""
-    cloudproviders = db.scalars(select(models.CloudProvider)).all()
-    environments = db.scalars(select(models.Environment)).all()
-    stacks = db.scalars(select(models.Stack)).all()
+    cloudproviders = db.scalars(
+        select(models.CloudProvider).where(models.CloudProvider.active)
+    ).all()
+    environments = db.scalars(
+        select(models.Environment).where(models.Environment.active)
+    ).all()
+    stacks = db.scalars(select(models.Stack).where(models.Stack.active)).all()
+    products = db.scalars(select(models.Product).where(models.Product.active)).all()
 
     context = {
         "current_user": current_user,
@@ -287,6 +425,7 @@ def hx_deployment_create_form(
         "cloudproviders": cloudproviders,
         "environments": environments,
         "stacks": stacks,
+        "products": products,
         "request": request,
     }
 
@@ -317,6 +456,19 @@ def hx_edit_deployment(
             request=request,
             db=db,
             id=id,
+        )
+        deployment.environment = db.scalar(
+            select(models.Environment).where(
+                models.Environment.id == deployment.environment_id
+            )
+        )
+        deployment.cloudprovider = db.scalar(
+            select(models.CloudProvider).where(
+                models.CloudProvider.id == deployment.environment.cloudprovider_id
+            )
+        )
+        deployment.stack = db.scalar(
+            select(models.Stack).where(models.Stack.id == deployment.stack_id)
         )
     except HTTPException as e:
         if e.status_code == status.HTTP_404_NOT_FOUND:
@@ -360,6 +512,19 @@ def hx_get_deployment(
             db=db,
             id=id,
         )
+        deployment.environment = db.scalar(
+            select(models.Environment).where(
+                models.Environment.id == deployment.environment_id
+            )
+        )
+        deployment.cloudprovider = db.scalar(
+            select(models.CloudProvider).where(
+                models.CloudProvider.id == deployment.environment.cloudprovider_id
+            )
+        )
+        deployment.stack = db.scalar(
+            select(models.Stack).where(models.Stack.id == deployment.stack_id)
+        )
     except HTTPException as e:
         if e.status_code == status.HTTP_404_NOT_FOUND:
             deployment = None
@@ -388,6 +553,7 @@ def hx_get_deployment(
 )
 def hx_create_deployment(
     request: Request,
+    background_tasks: BackgroundTasks,
     new_deployment: schemas.DeploymentCreate,
     db: Session = Depends(get_db),
     current_user=Depends(hx_get_current_user),
@@ -397,8 +563,22 @@ def hx_create_deployment(
         deployment = create_deployment(
             new_deployment=new_deployment,
             request=request,
+            background_tasks=background_tasks,
             db=db,
             current_user=current_user,
+        )
+        deployment.environment = db.scalar(
+            select(models.Environment).where(
+                models.Environment.id == deployment.environment_id
+            )
+        )
+        deployment.cloudprovider = db.scalar(
+            select(models.CloudProvider).where(
+                models.CloudProvider.id == deployment.environment.cloudprovider_id
+            )
+        )
+        deployment.stack = db.scalar(
+            select(models.Stack).where(models.Stack.id == deployment.stack_id)
         )
     except HTTPException as e:
         if e.status_code == status.HTTP_404_NOT_FOUND:
@@ -428,6 +608,7 @@ def hx_create_deployment(
 def hx_delete_deployment(
     request: Request,
     id: int,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user=Depends(hx_get_current_user),
 ):
@@ -436,8 +617,22 @@ def hx_delete_deployment(
         deployment = delete_deployment(
             id=id,
             request=request,
+            background_tasks=background_tasks,
             db=db,
             current_user=current_user,
+        )
+        deployment.environment = db.scalar(
+            select(models.Environment).where(
+                models.Environment.id == deployment.environment_id
+            )
+        )
+        deployment.cloudprovider = db.scalar(
+            select(models.CloudProvider).where(
+                models.CloudProvider.id == deployment.environment.cloudprovider_id
+            )
+        )
+        deployment.stack = db.scalar(
+            select(models.Stack).where(models.Stack.id == deployment.stack_id)
         )
     except HTTPException as e:
         if e.status_code == status.HTTP_404_NOT_FOUND:
@@ -452,7 +647,7 @@ def hx_delete_deployment(
     }
     return templates.TemplateResponse(
         request=request,
-        name="shared/none.html",
+        name="deployments/card.html",
         context=context,
         headers={"HX-Trigger": "closeModal"},
     )
@@ -516,7 +711,16 @@ def hx_validate_deployment_name(
     deployment_exists = db.scalars(
         select(models.Deployment).where(models.Deployment.name == deployment.name)
     ).first()
-    if deployment.name and len(deployment.name) >= 3 and not deployment_exists:
+
+    regex = re.compile(r"^[A-Za-z0-9-_]+$")
+    name_is_valid = regex.match(deployment.name)  # type: ignore
+
+    if (
+        deployment.name
+        and name_is_valid
+        and len(deployment.name) >= 3
+        and not deployment_exists
+    ):
         return True
     return False
 
@@ -547,7 +751,6 @@ async def hx_validate_deployment_create_form(
             "value": deployment.name,
             "ready_to_submit": enable_submit_btn,
         }
-        print("Hi there")
 
     response = templates.TemplateResponse(
         request=request,

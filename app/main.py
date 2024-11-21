@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, status
-from fastapi.exceptions import RequestValidationError
+# from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -13,6 +13,22 @@ from app.routers import html_router, json_router
 
 # Create Metadata
 Base.metadata.create_all(bind=engine)
+
+
+# Create the Admin User 
+# admin_user = db.scalar(
+#         select(models.User).where(models.User.email == settings.admin_email)
+#     )
+# if not admin_user:
+#     admin_user = models.User(
+#         first_name=settings.admin_first_name,
+#         last_name=settings.admin_last_name,
+#         email=settings.admin_email,
+#         password=settings.admin_password,
+#         superuser=True,
+#     )
+#     db.add(admin_user)
+#     db.commit()
 
 
 app = FastAPI()
@@ -41,8 +57,13 @@ app.add_middleware(
 )
 
 
+
+
+
+
+
 @app.exception_handler(InvalidCredentialsException)
-async def hx_authentixation_(request: Request, exc: InvalidCredentialsException):
+async def hx_handle_credentials_exception(request: Request, exc: InvalidCredentialsException):
     """
 
     Redirect the user to the login page if authentication fails or if the user does not have the necessary permissions

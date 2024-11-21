@@ -7,7 +7,8 @@ from app.config import settings
 
 naming_convention = {
     "pk": "pk_%(table_name)s",  # Primary key constraint
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",  # Foreign key constraint
+    # "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",  # Foreign key constraint
+    "fk": "fk_%(table_name)s_%(referred_table_name)s",  # Foreign key constraint
     "uq": "uq_%(table_name)s_%(column_0_name)s",  # Unique constraint
     "ix": "ix_%(table_name)s_%(column_0_name)s",  # Index
     "ck": "ck_%(table_name)s_%(constraint_name)s",  # Check constraint
@@ -18,8 +19,8 @@ metadata = MetaData(naming_convention=naming_convention)
 Base = declarative_base(metadata=metadata)
 
 
-DB_URI = str(settings.db_uri)
-engine = create_engine(DB_URI)
+db_uri = str(settings.db_uri)
+engine = create_engine(db_uri)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

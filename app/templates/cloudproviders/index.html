@@ -3,10 +3,10 @@
   <hgroup>
 
     <h3>Cloud Providers</h3>
-    <p>Create and manage your Cloud Providers.</p>
+    <p>Manage your Cloud Providers.</p>
   </hgroup>
 
-  <article class="card card-add"
+  <!-- <article class="card card-add"
            hx-get="/cloudproviders/create"
            hx-target=".content-body"
            hx-swap="beforeend">
@@ -18,7 +18,7 @@
         <i class="bi bi-plus-circle-fill card-icon icon-primary"></i>
       </div>
     </div>
-  </article>
+  </article> -->
 </div>
 
 <hr />
@@ -52,4 +52,54 @@
   <label class="error-message"
          id="error-message"
          style="display: none;"></label>
+</div>
+
+<!-- sidenav -->
+
+<div class="sidenav-body"
+     id="sidenav-body"
+     hx-swap-oob="true">
+
+  <div class="sidenav-item sidenav-item-home"
+       hx-get="/"
+       hx-trigger="click"
+       hx-swap="outerHTML"
+       hx-target="html">Home</div>
+
+  <div class="sidenav-item sidenav-item-deployments"
+       hx-get="/deployments"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Deployments</div>
+
+  <div class="sidenav-item sidenav-item-stacks"
+       hx-get="/stacks"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Stacks</div>
+
+  <div class="sidenav-item sidenav-item-environments"
+       hx-get="/environments"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Environments</div>
+
+  <div class="sidenav-item sidenav-item-products"
+       hx-get="/products"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Products</div>
+
+  <div class="sidenav-item sidenav-item-cloudproviders sidenav-item-active"
+       hx-get="/cloudproviders"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Cloud Providers</div>
+
+  <div class="sidenav-item sidenav-item-users"
+       hx-get="/users"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Users</div>
+
 </div>

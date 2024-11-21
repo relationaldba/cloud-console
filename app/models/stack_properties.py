@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     TIMESTAMP,
-    Boolean,
     ForeignKey,
     Integer,
     String,
@@ -14,13 +13,14 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 if TYPE_CHECKING:
-    from .services import Service
+    from .deployments import Deployment
+    from .stacks import Stack
 
 
-class ServiceDetail(Base):
-    """ORM Class that represents the `service_details` table"""
+class StackProperty(Base):
+    """ORM Class that represents the `stack_properties` table"""
 
-    __tablename__ = "service_details"
+    __tablename__ = "stack_properties"
 
     id: Mapped[int] = mapped_column(
         name="id",
@@ -36,15 +36,8 @@ class ServiceDetail(Base):
     )
     value: Mapped[str] = mapped_column(
         name="value",
-        type_=String(512),
+        type_=String(4096),
         nullable=False,
-    )
-    active: Mapped[bool] = mapped_column(
-        name="active",
-        type_=Boolean,
-        nullable=False,
-        default=True,
-        server_default="true",
     )
     created_at: Mapped[datetime] = mapped_column(
         name="created_at",
@@ -59,13 +52,27 @@ class ServiceDetail(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
-    # service_id: Mapped[int] = mapped_column(
-    #     ForeignKey(
-    #         column="services.id", name="fk_service_details_services", ondelete="CASCADE"
-    #     ),
-    #     name="service_id",
-    #     nullable=False,
-    # )
-    # service: Mapped["Service"] = relationship(
-    #     back_populates="service_details",
-    # )
+    stack_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            column="stacks.id",
+            name="fk_stack_properties_stacks",
+            ondelete="CASCADE",
+        ),
+        name="stack_id",
+        nullable=False,
+    )
+    stack: Mapped["Stack"] = relationship(
+        back_populates="stack_properties",
+    )
+    deployment_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            column="deployments.id",
+            name="fk_stack_properties_deployments",
+            ondelete="CASCADE",
+        ),
+        name="deployment_id",
+        nullable=False,
+    )
+    deployment: Mapped["Deployment"] = relationship(
+        back_populates="stack_properties",
+    )

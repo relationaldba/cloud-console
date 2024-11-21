@@ -12,9 +12,9 @@
   {% else %}
   <option selected
           disabled
-          value="">Choose a Environment</option>
+          value="">Choose an Environment</option>
   {% for environment in environments %}
-  <option value="{{ environment.id }}">{{ environment.name }}</option>
+  <option value="{{ environment.id }}">{{ environment.name }} ({{ environment.aws_account_id }}/{{ environment.aws_region }})</option>
   {% endfor %}
   {% endif %}
 </select>

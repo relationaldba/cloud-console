@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+import enum
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import (
     TIMESTAMP,
@@ -7,20 +8,40 @@ from sqlalchemy import (
     Integer,
     String,
     func,
+    Enum,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
 if TYPE_CHECKING:
-    from .cloudproviders import CloudProvider
     from .environments import Environment
+    from .product_properties import ProductProperty
+    from .products import Product
+    from .stack_properties import StackProperty
     from .stacks import Stack
     from .users import User
 
 
+class DeploymentStatusEnum(str, enum.Enum):
+    QUEUED = "QUEUED"  # Default
+    SYNTHESIZING = "SYNTHESIZING"
+    CREATING = "CREATING"
+    INSTALLING = "INSTALLING"
+    ONLINE = "ONLINE"
+    STOPPING = "STOPPING"
+    STOPPED = "STOPPED"
+    DELETING = "DELETING"
+    DELETED = "DELETED"
+    FAILED = "FAILED"
+    ERROR = "ERROR"
+    RESTARTING = "RESTARTING"
+    UPGRADING = "UPGRADING"
+    ROLLINGBACK = "ROLLINGBACK"
+
+
 class Deployment(Base):
-    """ORM Class that represents the `stacks` table"""
+    """ORM Class that represents the `deployments` table"""
 
     __tablename__ = "deployments"
 
@@ -36,10 +57,17 @@ class Deployment(Base):
         type_=String(128),
         nullable=False,
     )
+    description: Mapped[str] = mapped_column(
+        name="description",
+        type_=String(256),
+        nullable=False,
+    )
     status: Mapped[str] = mapped_column(
         name="status",
         type_=String(128),
         nullable=False,
+        default=DeploymentStatusEnum.QUEUED.value,
+        server_default=DeploymentStatusEnum.QUEUED.value,
     )
     created_by: Mapped[int] = mapped_column(
         ForeignKey(
@@ -66,17 +94,10 @@ class Deployment(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
-    cloudprovider_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            column="cloudproviders.id",
-            name="fk_deployments_cloudproviders",
-            ondelete="CASCADE",
-        ),
-        name="cloudprovider_id",
-        nullable=False,
-    )
-    cloudprovider: Mapped["CloudProvider"] = relationship(
-        back_populates="deployments",
+    deleted_at: Mapped[datetime] = mapped_column(
+        name="deleted_at",
+        type_=TIMESTAMP(timezone=True),
+        nullable=True,
     )
     environment_id: Mapped[int] = mapped_column(
         ForeignKey(
@@ -101,4 +122,24 @@ class Deployment(Base):
     )
     stack: Mapped["Stack"] = relationship(
         back_populates="deployments",
+    )
+    product_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            column="products.id",
+            name="fk_deployments_products",
+            ondelete="CASCADE",
+        ),
+        name="product_id",
+        nullable=False,
+    )
+    product: Mapped["Product"] = relationship(
+        back_populates="deployments",
+    )
+    stack_properties: Mapped[List["StackProperty"]] = relationship(
+        back_populates="deployment",
+        cascade="all, delete-orphan",
+    )
+    product_properties: Mapped[List["ProductProperty"]] = relationship(
+        back_populates="deployment",
+        cascade="all, delete-orphan",
     )

@@ -1,6 +1,4 @@
-from datetime import datetime
-
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CloudProviderBase(BaseModel):
@@ -22,10 +20,10 @@ class CloudProviderCreate(CloudProviderBase):
     pass
 
 
-class CloudProviderUpdate(CloudProviderBase):
+class CloudProviderUpdate(BaseModel):
     """The model for updating the CloudProvider object"""
 
-    active: bool | None = False
+    active: bool
 
 
 class CloudProviderResponse(CloudProviderBase):
@@ -34,10 +32,9 @@ class CloudProviderResponse(CloudProviderBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    code: str
+    name: str
     active: bool
-    created_at: datetime
-    updated_at: datetime
-    creator: EmailStr
 
 
 class CloudProviderMiniResponse(BaseModel):
@@ -48,14 +45,3 @@ class CloudProviderMiniResponse(BaseModel):
     id: int
     code: str
     name: str
-
-
-class CloudProviderValidate(BaseModel):
-    """The base model for the validation of the CloudProvider object"""
-
-    model_config = ConfigDict(
-        str_strip_whitespace=True,
-    )
-    code: str | None = None
-    name: str | None = None
-    description: str | None = None

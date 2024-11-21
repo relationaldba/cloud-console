@@ -2,7 +2,7 @@ name: api
 
 services:
   fastapi-app:
-    image: fastapi-app
+    # image: fastapi-app
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -10,12 +10,19 @@ services:
 
     # container_name: fastapi-app
     hostname: fastapi-app
-    command: ["uvicorn", "--host", "0.0.0.0", "app.main:app", "--reload"]
+    # command: ["uvicorn", "--host", "0.0.0.0", "app.main:app", "--reload"]
     env_file:
       - ./.env
-    environment:
-      - PYTHONUNBUFFERED=1
-      - PYTHONDONTWRITEBYTECODE=1
+    # environment:
+    #   - PYTHONUNBUFFERED=1
+    #   - PYTHONDONTWRITEBYTECODE=1
+    #   - AUTH_SECRET_KEY=l+g1N2QUivabl88RD2GcsqWU/+ETOExbZnYtWQ3tCSUmnADm1q3aujvGfx+OjXSUHFxVJNrYjHV34VukzAezaA==
+    #   - AUTH_TOKEN_EXPIRE_MINUTES=720
+    #   - REFRESH_TOKEN_EXPIRE_MINUTES=720
+    #   - REMEMBER_ME_MINUTES=20160
+    #   - DB_URI="postgresql+psycopg://postgres:postgres@fastapi-db/fastapi"
+    #   - ORGANIZATION_NAME="Smile Digital Health"
+    #   - ORGANIZATION_SHORT_NAME="SDH"
     # volumes:
     #   - ./app:/api/app
     #   - ./tests:/api/tests

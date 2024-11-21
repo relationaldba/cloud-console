@@ -60,12 +60,6 @@ def get_all_cloudproviders(
                 "path": request.url.path,
             },
         )
-    for cloudprovider in cloudproviders:
-        user = db.scalar(
-            select(models.User).where(models.User.id == cloudprovider.created_by)
-        )
-        if user:
-            cloudprovider.creator = user.email
 
     return cloudproviders
 
@@ -98,85 +92,7 @@ def get_cloudprovider(
             },
         )
 
-    user = db.scalar(
-        select(models.User).where(models.User.id == cloudprovider.created_by)
-    )
-    if user:
-        cloudprovider.creator = user.email
-
     return cloudprovider
-
-
-@json_router.post(
-    path="/cloudproviders",
-    status_code=status.HTTP_201_CREATED,
-    response_model=schemas.CloudProviderResponse,
-)
-def create_cloudprovider(
-    new_cloudprovider: schemas.CloudProviderCreate,
-    request: Request,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    """Create a cloudprovider"""
-
-    # Check if the cloudprovider already exists, if yes, then raise an error
-    cloudprovider = db.scalar(
-        select(models.CloudProvider).where(
-            models.CloudProvider.name == new_cloudprovider.name
-        )
-    )
-
-    if cloudprovider:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail={
-                "error_code": "CLOUD_PROVIDER_EXISTS",
-                "module": "CloudProviders",
-                "message": "The cloudprovider(s) you are trying to add already exist. Verify the details and try again.",
-                "path": request.url.path,
-            },
-        )
-
-    cloudprovider = models.CloudProvider(
-        **new_cloudprovider.model_dump(), created_by=current_user.id
-    )
-    db.add(cloudprovider)
-    db.commit()
-    db.refresh(instance=cloudprovider)
-    cloudprovider.creator = current_user.email
-    return cloudprovider
-
-
-@json_router.delete(
-    path="/cloudproviders/{id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-)
-def delete_cloudprovider(
-    id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
-):
-    """Delete a cloudprovider"""
-
-    cloudprovider = db.scalar(
-        select(models.CloudProvider).where(models.CloudProvider.id == id)
-    )
-
-    if not cloudprovider:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={
-                "error_code": "CLOUD_PROVIDER_NOT_FOUND",
-                "module": "CloudProviders",
-                "message": "The requested CloudProvider(s) could not be found, or you do not have permission to access them.",
-                "path": request.url.path,
-            },
-        )
-
-    db.delete(cloudprovider)
-    db.commit()
 
 
 @json_router.put(
@@ -207,24 +123,23 @@ def update_cloudprovider(
             },
         )
 
-    for key, value in updated_cloudprovider.model_dump(
-        exclude_unset=False, exclude_none=True
-    ).items():
-        setattr(cloudprovider, key, value)
+    # for key, value in updated_cloudprovider.model_dump(
+    #     exclude_unset=False, exclude_none=True
+    # ).items():
+    #     setattr(cloudprovider, key, value)
 
+    if updated_cloudprovider.active:
+        cloudprovider.active = True
+    else:
+        cloudprovider.active = False
     db.commit()
     db.refresh(instance=cloudprovider)
-    user = db.scalar(
-        select(models.User).where(models.User.id == cloudprovider.created_by)
-    )
-    if user:
-        cloudprovider.creator = user.email
+
     return cloudprovider
 
 
 """
     /*
-     *
      *
      *      Hypermedia (HTML) API Routes (GET, POST, PUT, DELETE)
      *
@@ -277,31 +192,6 @@ async def hx_get_all_cloudproviders(
     return response
 
 
-@html_router.get(
-    "/cloudproviders/create",
-    status_code=status.HTTP_200_OK,
-    response_class=HTMLResponse,
-)
-def hx_cloudprovider_create_form(
-    request: Request,
-    current_user=Depends(hx_get_current_user),
-    db: Session = Depends(get_db),
-):
-    """Get a cloudprovider by id"""
-
-    context = {
-        "current_user": current_user,
-        "action": "create",
-        "request": request,
-    }
-
-    response = templates.TemplateResponse(
-        request=request,
-        name="cloudproviders/crud.html",
-        context=context,
-    )
-
-    return response
 
 
 @html_router.get(
@@ -386,82 +276,6 @@ def hx_get_cloudprovider(
     return response
 
 
-@html_router.post(
-    path="/cloudproviders",
-    status_code=status.HTTP_201_CREATED,
-    response_class=HTMLResponse,
-)
-def hx_create_cloudprovider(
-    request: Request,
-    new_cloudprovider: schemas.CloudProviderCreate,
-    db: Session = Depends(get_db),
-    current_user=Depends(hx_get_current_user),
-):
-    """Create a cloudprovider"""
-    try:
-        cloudprovider = create_cloudprovider(
-            new_cloudprovider=new_cloudprovider,
-            request=request,
-            db=db,
-            current_user=current_user,
-        )
-    except HTTPException as e:
-        if e.status_code == status.HTTP_404_NOT_FOUND:
-            cloudprovider = None
-        else:
-            raise e
-
-    context = {
-        "current_user": current_user,
-        "cloudprovider": cloudprovider,
-        "request": request,
-    }
-    return templates.TemplateResponse(
-        request=request,
-        name="cloudproviders/card.html",
-        context=context,
-        status_code=status.HTTP_201_CREATED,
-        headers={"HX-Trigger": "closeModal"},
-    )
-
-
-@html_router.delete(
-    path="/cloudproviders/{id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    response_class=HTMLResponse,
-)
-def hx_delete_cloudprovider(
-    request: Request,
-    id: int,
-    db: Session = Depends(get_db),
-    current_user=Depends(hx_get_current_user),
-):
-    """Delete a cloudprovider"""
-    try:
-        cloudprovider = delete_cloudprovider(
-            id=id,
-            request=request,
-            db=db,
-            current_user=current_user,
-        )
-    except HTTPException as e:
-        if e.status_code == status.HTTP_404_NOT_FOUND:
-            cloudprovider = None
-        else:
-            raise e
-
-    context = {
-        "current_user": current_user,
-        "cloudprovider": cloudprovider,
-        "request": request,
-    }
-    return templates.TemplateResponse(
-        request=request,
-        name="shared/none.html",
-        context=context,
-        headers={"HX-Trigger": "closeModal"},
-    )
-
 
 @html_router.put(
     path="/cloudproviders/{id}",
@@ -510,72 +324,3 @@ def hx_update_cloudprovider(
         name="cloudproviders/crud.html",
         context=context,
     )
-
-
-######## Validation Route ########
-
-
-def hx_validate_cloudprovider_name(
-    cloudprovider: schemas.CloudProviderValidate,
-    db: Session = Depends(get_db),
-):
-    if cloudprovider.name and len(cloudprovider.name) >= 3:
-        return True
-    return False
-
-
-def hx_validate_cloudprovider_code(
-    cloudprovider: schemas.CloudProviderValidate,
-    db: Session = Depends(get_db),
-):
-    if cloudprovider.code and len(cloudprovider.code) >= 3:
-        return True
-    return False
-
-
-@html_router.post(
-    "/cloudproviders/validate/{field}",
-    status_code=status.HTTP_200_OK,
-    response_class=HTMLResponse,
-)
-async def hx_validate_cloudprovider_create_form(
-    cloudprovider: schemas.CloudProviderValidate,
-    field: str,
-    request: Request,
-    current_user=Depends(hx_get_current_user),
-    db: Session = Depends(get_db),
-):
-    name_is_valid = hx_validate_cloudprovider_name(
-        cloudprovider,
-        db,
-    )
-
-    code_is_valid = hx_validate_cloudprovider_code(
-        cloudprovider,
-        db,
-    )
-
-    enable_submit_btn = name_is_valid and code_is_valid
-
-    if field == "name":
-        context = {
-            "field": "name",
-            "is_validated": name_is_valid,
-            "value": cloudprovider.name,
-            "ready_to_submit": enable_submit_btn,
-        }
-    elif field == "code":
-        context = {
-            "field": "code",
-            "is_validated": code_is_valid,
-            "value": cloudprovider.code,
-            "ready_to_submit": enable_submit_btn,
-        }
-
-    response = templates.TemplateResponse(
-        request=request,
-        name="cloudproviders/validate.html",
-        context=context,
-    )
-
-    return response

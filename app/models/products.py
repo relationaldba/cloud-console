@@ -16,8 +16,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 if TYPE_CHECKING:
-    # from .product_details import ProductDetail
-    # from .stack_details import StackDetail
+    from .deployments import Deployment
     from .users import User
 
 
@@ -75,7 +74,6 @@ class Product(Base):
         name="created_by",
         nullable=False,
     )
-
     created_at: Mapped[datetime] = mapped_column(
         name="created_at",
         type_=TIMESTAMP(timezone=True),
@@ -89,15 +87,16 @@ class Product(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+    deleted_at: Mapped[datetime] = mapped_column(
+        name="deleted_at",
+        type_=TIMESTAMP(timezone=True),
+        nullable=True,
+    )
     user: Mapped["User"] = relationship(
         back_populates="products",
     )
-    # product_details: Mapped[List["ProductDetail"]] = relationship(
-    #     back_populates="product",
-    # )
-    # stack_details: Mapped[List["StackDetail"]] = relationship(
-    #     back_populates="product",
-    # )
+    deployments: Mapped[List["Deployment"]] = relationship(
+        back_populates="product",
+    )
 
     __table_args__ = (Index("ix_products_id_active", "id", "active"),)
-

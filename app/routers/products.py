@@ -73,6 +73,13 @@ def get_all_products(
             },
         )
 
+    for product in products:
+        user = db.scalar(
+            select(models.User).where(models.User.id == product.created_by)
+        )
+        if user:
+            product.creator = user.email
+
     return products
 
 
@@ -101,7 +108,9 @@ def get_product(
                 "path": request.url.path,
             },
         )
-
+    user = db.scalar(select(models.User).where(models.User.id == product.created_by))
+    if user:
+        product.creator = user.email
     return product
 
 
@@ -117,7 +126,6 @@ def create_product(
     current_user=Depends(get_current_user),
 ):
     """Create a product"""
-    new_product.created_by = current_user.id
 
     # Check if the product already exists, if yes, then raise an error
     product = db.scalar(
@@ -137,10 +145,11 @@ def create_product(
             },
         )
 
-    product = models.Product(**new_product.model_dump())
+    product = models.Product(**new_product.model_dump(), created_by=current_user.id)
     db.add(product)
     db.commit()
     db.refresh(instance=product)
+    product.creator = current_user.email
     return product
 
 
@@ -206,6 +215,9 @@ def update_product(
 
     db.commit()
     db.refresh(instance=product)
+    user = db.scalar(select(models.User).where(models.User.id == product.created_by))
+    if user:
+        product.creator = user.email
     return product
 
 
@@ -277,56 +289,58 @@ def hx_product_create_form(
 
     context = {
         "current_user": current_user,
+        "action": "create",
         "request": request,
     }
 
     response = templates.TemplateResponse(
         request=request,
-        name="products/create.html",
+        name="products/crud.html",
         context=context,
     )
 
     return response
 
 
-# @html_router.get(
-#     "/products/{id}/edit",
-#     status_code=status.HTTP_200_OK,
-#     response_class=HTMLResponse,
-# )
-# def hx_edit_product(
-#     id: int,
-#     request: Request,
-#     current_user=Depends(hx_get_current_user),
-#     db: Session = Depends(get_db),
-# ):
-#     """Get a product by id"""
+@html_router.get(
+    "/products/{id}/edit",
+    status_code=status.HTTP_200_OK,
+    response_class=HTMLResponse,
+)
+def hx_edit_product(
+    id: int,
+    request: Request,
+    current_user=Depends(hx_get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Edit a product by id"""
 
-#     try:
-#         product = get_product(
-#             request=request,
-#             db=db,
-#             id=id,
-#         )
-#     except HTTPException as e:
-#         if e.status_code == status.HTTP_404_NOT_FOUND:
-#             product = None
-#         else:
-#             raise e
+    try:
+        product = get_product(
+            request=request,
+            db=db,
+            id=id,
+        )
+    except HTTPException as e:
+        if e.status_code == status.HTTP_404_NOT_FOUND:
+            product = None
+        else:
+            raise e
 
-#     context = {
-#         "current_user": current_user,
-#         "product": product,
-#         "request": request,
-#     }
+    context = {
+        "current_user": current_user,
+        "action": "update",
+        "product": product,
+        "request": request,
+    }
 
-#     response = templates.TemplateResponse(
-#         request=request,
-#         name="products/edit.html",
-#         context=context,
-#     )
+    response = templates.TemplateResponse(
+        request=request,
+        name="products/crud.html",
+        context=context,
+    )
 
-#     return response
+    return response
 
 
 @html_router.get(
@@ -356,13 +370,14 @@ def hx_get_product(
 
     context = {
         "current_user": current_user,
+        "action": "read",
         "product": product,
         "request": request,
     }
 
     response = templates.TemplateResponse(
         request=request,
-        name="products/detail.html",
+        name="products/crud.html",
         context=context,
     )
     return response
@@ -439,7 +454,7 @@ def hx_delete_product(
     }
     return templates.TemplateResponse(
         request=request,
-        name="products/delete.html",
+        name="shared/none.html",
         context=context,
         headers={"HX-Trigger": "closeModal"},
     )
@@ -459,7 +474,6 @@ def hx_update_product(
 ):
     """Update a product."""
 
-    print(updated_product.model_dump())
     try:
         product = update_product(
             id=id,
@@ -483,12 +497,13 @@ def hx_update_product(
 
     context = {
         "current_user": current_user,
+        "action": "read",
         "product": product,
         "request": request,
     }
     return templates.TemplateResponse(
         request=request,
-        name="products/detail.html",
+        name="products/crud.html",
         context=context,
     )
 
@@ -536,15 +551,6 @@ def hx_validate_product_repository_url(
     return False
 
 
-def hx_validate_product_repository_username(
-    product: schemas.ProductValidate,
-    db: Session = Depends(get_db),
-):
-    if product.repository_username and len(product.repository_username) >= 3:
-        return True
-    return False
-
-
 @html_router.post(
     "/products/validate/{field}",
     status_code=status.HTTP_200_OK,
@@ -569,17 +575,7 @@ async def hx_validate_product_create_form(
         product,
         db,
     )
-    repository_username_is_valid = hx_validate_product_repository_username(
-        product,
-        db,
-    )
-
-    enable_submit_btn = (
-        name_is_valid
-        and version_is_valid
-        and repository_url_is_valid
-        and repository_username_is_valid
-    )
+    enable_submit_btn = name_is_valid and version_is_valid and repository_url_is_valid
 
     if field == "name":
         context = {
@@ -602,80 +598,10 @@ async def hx_validate_product_create_form(
             "value": product.repository_url,
             "ready_to_submit": enable_submit_btn,
         }
-    elif field == "repository_username":
-        context = {
-            "field": "repository_username",
-            "is_validated": repository_username_is_valid,
-            "value": product.repository_username,
-            "ready_to_submit": enable_submit_btn,
-        }
 
     response = templates.TemplateResponse(
         request=request,
-        name="products/validate-create.html",
-        context=context,
-    )
-
-    return response
-
-
-@html_router.post(
-    "/products/validate/{field}/update",
-    status_code=status.HTTP_200_OK,
-    response_class=HTMLResponse,
-)
-async def hx_validate_product_update_form(
-    product: schemas.ProductValidate,
-    field: str,
-    request: Request,
-    current_user=Depends(hx_get_current_user),
-    db: Session = Depends(get_db),
-):
-    name_is_valid = hx_validate_product_name(
-        product,
-        db,
-    )
-    version_is_valid = hx_validate_product_version(
-        product,
-        db,
-    )
-    repository_url_is_valid = hx_validate_product_repository_url(
-        product,
-        db,
-    )
-    repository_username_is_valid = hx_validate_product_repository_username(
-        product,
-        db,
-    )
-
-    if field == "name":
-        context = {
-            "field": "name",
-            "is_validated": name_is_valid,
-            "value": product.name,
-        }
-    elif field == "version":
-        context = {
-            "field": "version",
-            "is_validated": version_is_valid,
-            "value": product.version,
-        }
-    elif field == "repository_url":
-        context = {
-            "field": "repository_url",
-            "is_validated": repository_url_is_valid,
-            "value": product.repository_url,
-        }
-    elif field == "repository_username":
-        context = {
-            "field": "repository_username",
-            "is_validated": repository_username_is_valid,
-            "value": product.repository_username,
-        }
-
-    response = templates.TemplateResponse(
-        request=request,
-        name="products/validate-update.html",
+        name="products/validate.html",
         context=context,
     )
 

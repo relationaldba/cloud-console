@@ -9,7 +9,7 @@ from app.database import Base
 if TYPE_CHECKING:
     from .cloudproviders import CloudProvider
     from .deployments import Deployment
-    from .users import User
+    from .stack_properties import StackProperty
 
 
 class Stack(Base):
@@ -46,18 +46,6 @@ class Stack(Base):
         default=True,
         server_default="true",
     )
-    created_by: Mapped[int] = mapped_column(
-        ForeignKey(
-            column="users.id",
-            name="fk_stacks_users",
-            ondelete="CASCADE",
-        ),
-        name="created_by",
-        nullable=False,
-    )
-    user: Mapped["User"] = relationship(
-        back_populates="stacks",
-    )
     created_at: Mapped[datetime] = mapped_column(
         name="created_at",
         type_=TIMESTAMP(timezone=True),
@@ -83,9 +71,9 @@ class Stack(Base):
     cloudprovider: Mapped["CloudProvider"] = relationship(
         back_populates="stacks",
     )
-    deployments: Mapped["Deployment"] = relationship(
+    deployments: Mapped[List["Deployment"]] = relationship(
         back_populates="stack",
     )
-    # stack_details: Mapped[List["StackDetail"]] = relationship(
-    #     back_populates="stack",
-    # )
+    stack_properties: Mapped[List["StackProperty"]] = relationship(
+        back_populates="stack",
+    )

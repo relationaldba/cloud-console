@@ -47,14 +47,8 @@
                  maxlength="64"
                  aria-label="Cloud Provider Name"
                  hx-ext="json-enc"
-                 {% if action == "create" %}
-                 hx-post="/cloudproviders/validate/name"
-                 hx-target="this"
-                 hx-swap="outerHTML"
-                 {% else %}
                  value="{{ cloudprovider.name }}"
-                 readonly
-                 {% endif %} />
+                 readonly />
           <small id="name-helper"></small>
         </label>
 
@@ -68,14 +62,8 @@
                  maxlength="12"
                  aria-label="Cloud Provider Code"
                  hx-ext="json-enc"
-                 {% if action == "create" %}
-                 hx-post="/cloudproviders/validate/code"
-                 hx-target="this"
-                 hx-swap="outerHTML"
-                 {% else %}
                  value="{{ cloudprovider.code }}"
-                 readonly
-                 {% endif %} />
+                 readonly/>
         </label>
 
         <label for="description">Description <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
@@ -86,13 +74,8 @@
                  maxlength="256"
                  aria-label="Description"
                  hx-ext="json-enc"
-                 {% if action == "read" %}
                  value="{{ cloudprovider.description }}"
-                 readonly
-                 {% elif action == "update" %}
-                 value="{{ cloudprovider.description }}"
-                 aria-invalid="false"
-                 {% endif %} />
+                 readonly/>
         </label>
 
         <label for="active">Active &nbsp;&nbsp;
@@ -103,12 +86,6 @@
                  {% if action == "read" or action == "create" %}disabled{% endif %}
                  {% if cloudprovider is undefined or cloudprovider.active %}checked{% endif %} />
         </label>
-
-        {% if action == "read" or action == "update" %}
-        <label>Created By &nbsp;{{ cloudprovider.creator }}</label>
-        <label>Created Date &nbsp;{{ cloudprovider.created_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
-        <label>Updated Date &nbsp;{{ cloudprovider.updated_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
-        {% endif %}
 
         <label class="error-message"
                id="error-message"
@@ -129,13 +106,13 @@
       <div class="modal-footer">
 
         {% if action == "read" %}
-        <button type="button"
+        <!-- <button type="button"
                 class="secondary outline delete-btn"
                 id="delete-btn"
                 hx-delete="/cloudproviders/{{ cloudprovider.id }}"
                 hx-swap="outerHTML swap:1s"
                 hx-target="#card-cloudproviders-{{ cloudprovider.id }}"
-                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Delete</button>
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Delete</button> -->
         <button type="button"
                 class="primary edit-btn"
                 id="edit-btn"

@@ -1,8 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
-
-from .users import UserResponse
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class ProductBase(BaseModel):
@@ -19,25 +17,25 @@ class ProductBase(BaseModel):
         max_length=16,
     )
     repository_url: str
-    repository_username: str
+    repository_username: str | None = Field(
+        min_length=0,
+    )
     repository_password: str | None = Field(
         min_length=0,
-        # exclude=True,
     )
-    active: bool | None = False
-    created_by: int | None = None
 
 
 class ProductCreate(ProductBase):
     """The model for creating a new Product object"""
 
     # product_details: List[ProductDetailCreate]
+    pass
 
 
 class ProductUpdate(ProductBase):
     """The model for updating the Product object"""
 
-    # active: bool
+    active: bool | None = False
     # product_details: List[ProductDetailUpdate]
 
 
@@ -49,7 +47,18 @@ class ProductResponse(ProductBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    user: UserResponse
+
+
+class ProductMiniResponse(BaseModel):
+    """The model for returning a short Environment object"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    version: str = Field(
+        max_length=16,
+    )
 
 
 class ProductValidate(BaseModel):
@@ -61,7 +70,4 @@ class ProductValidate(BaseModel):
 
     name: str | None = None
     version: str | None = None
-    description: str | None = None
     repository_url: str | None = None
-    repository_username: str | None = None
-    repository_password: str | None = None

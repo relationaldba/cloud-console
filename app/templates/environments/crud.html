@@ -91,7 +91,7 @@
             {% else %}
             <option selected
                     disabled
-                    value="">Choose a Cloud Provider</option>
+                    value="">Choose a Region</option>
             <option value="us-east-1">us-east-1</option>
             <option value="us-east-2">us-east-2</option>
             <option value="us-west-1">us-west-1</option>
@@ -208,6 +208,7 @@
                 hx-delete="/environments/{{ environment.id }}"
                 hx-swap="outerHTML swap:1s"
                 hx-target="#card-environments-{{ environment.id }}"
+                hx-enc="json-enc"
                 _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Delete</button>
         <button type="button"
                 class="primary edit-btn"

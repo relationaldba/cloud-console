@@ -3,8 +3,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from app.config import config
 from app.auth import hx_get_current_user
+from app.config import config
 from app.database import get_db
 
 html_router = APIRouter()
@@ -37,7 +37,10 @@ async def home(
     context = {"current_user": current_user, "config": config}
 
     response = templates.TemplateResponse(
-        request=request, name="index.html", context=context
+        request=request,
+        name="index.html",
+        context=context,
+        headers={"Hx-Refresh": "true"},
     )
 
     return response

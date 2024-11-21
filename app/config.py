@@ -3,7 +3,7 @@
 from datetime import date
 from logging import config
 
-from pydantic import PostgresDsn, ValidationError
+from pydantic import EmailStr, PostgresDsn, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     This class loads the settings from environment variables or a `.env` file.
     """
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 
     auth_secret_key: str = ""
     auth_algorithm: str = "HS256"
@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     remember_me_minutes: int = 60 * 24  # valid for 1 day
     refresh_token_expire_minutes: int | None = 60
     db_uri: PostgresDsn | None = None
+    admin_email: EmailStr = "admin@acme.com"
+    admin_password: str = "password"
+    admin_first_name: str = "Admin"
+    admin_last_name: str = "User"
 
 
 class Configuration(BaseSettings):
@@ -30,14 +34,14 @@ class Configuration(BaseSettings):
     This class loads the settings from environment variables or a `.env` file.
     """
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 
     current_date: date = date.today()
     organization_name: str = "ACME Corp"
     organization_short_name: str = "ACME"
-    organization_address: str = "123 Main St Acme City, USA 12345"
-    organization_email: str = "noreply@acme.com"
-    organization_phone: str = "+1234567890"
+    # organization_address: str = "123 Main St Acme City, USA 12345"
+    # organization_email: str = "noreply@acme.com"
+    # organization_phone: str = "+1234567890"
 
 
 try:

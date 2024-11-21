@@ -7,18 +7,28 @@
   <div class="card-content">
 
     <div class="card-body">
+
       <h4>{{ deployment.name }}</h4>
+      <h6>Status: <strong>{{ deployment.status }}</strong></h6>
 
       <small>Cloud Provider: {{ deployment.cloudprovider.name }}</small>
       <small>Region: {{ deployment.environment.aws_region }}</small>
-      <small>Account: {{ deployment.environment.aws_account_id }}</small>
+      <small>Environment: {{ deployment.environment.name }}</small>
       <small>Stack: {{ deployment.stack.name }}</small>
-      <small>Status: {{ deployment.status }}</small>
 
     </div>
 
     <div class="card-footer">
+
+      {% if deployment.status == "ONLINE" %}
+      <i class="bi bi-fire card-icon icon-fhir"></i>
+      {% elif deployment.status == "DELETED" %}
+      <i class="bi bi-fire card-icon icon-secondary"></i>
+      {% else %}
+      <progress></progress>
+      {% endif %}
       <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+
     </div>
   </div>
 </article>

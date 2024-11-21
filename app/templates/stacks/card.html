@@ -10,7 +10,7 @@
       <h4>{{ stack.name }}</h4>
 
       <small>Cloud Provider: {{ stack.cloudprovider.name }}</small>
-      <small>Class Name: {{ stack.class_name }}</small>
+      <small>{{ stack.description|truncate(100) }}</small>
 
     </div>
 

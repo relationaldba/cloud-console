@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 # from .environments import EnvironmentResponse
 
@@ -9,9 +9,8 @@ class UserBase(BaseModel):
     """The base model for the User object"""
 
     model_config = ConfigDict(
-        from_attributes=True,
-        str_min_length=1,
-        str_max_length=256,
+        str_min_length=3,
+        str_max_length=128,
         str_strip_whitespace=True,
     )
 
@@ -34,8 +33,17 @@ class UserCreate(UserBase):
 class UserUpdate(UserBase):
     """The model for updating the User object"""
 
-    password: str
-    active: bool
+    model_config = ConfigDict(
+        str_min_length=3,
+        str_max_length=128,
+        str_strip_whitespace=True,
+    )
+
+    first_name: str
+    last_name: str
+    email: EmailStr 
+    password: str | None = Field(default=None, min_length=0)
+    active: bool = False
 
 
 class UserLogin(BaseModel):
@@ -74,3 +82,16 @@ class UserResponse(UserBase):
     created_at: datetime
     updated_at: datetime
     last_login_at: datetime | None = None
+
+
+class UserValidate(BaseModel):
+    """The base model for the User object"""
+
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+    )
+
+    first_name: str | None = None
+    last_name: str | None = None
+    email: str | None = None
+    password: str | None = None

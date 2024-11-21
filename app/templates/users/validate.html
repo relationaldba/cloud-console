@@ -1,0 +1,165 @@
+{% if field == "first_name" and is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="first_name"
+       placeholder="First Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="First Name"
+       hx-post="/users/validate/first_name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="first_name-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "first_name" and not is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="first_name"
+       placeholder="Last Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Last Name"
+       hx-post="/users/validate/first_name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="first_name-helper"
+       value="{{ value }}" />
+<small id="first_name-helper"
+       hx-swap-oob="true">Must have atleast 3 letters</small>
+
+{% elif field == "last_name" and is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="last_name"
+       placeholder="Last Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Last Name"
+       hx-post="/users/validate/last_name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="last_name-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "last_name" and not is_validated %}
+
+<input class="inline-editable"
+       type="text"
+       name="last_name"
+       placeholder="Last Name"
+       required
+       minlength="3"
+       maxlength="64"
+       aria-label="Last Name"
+       hx-post="/users/validate/last_name"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="last_name-helper"
+       value="{{ value }}" />
+<small id="last_name-helper"
+       hx-swap-oob="true">Must have atleast 3 letters</small>
+
+{% elif field == "email" and is_validated %}
+
+<input class="inline-editable"
+       type="email"
+       name="email"
+       placeholder="Email"
+       required
+       minlength="3"
+       maxlength="128"
+       aria-label="Email"
+       hx-post="/users/validate/email"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="email-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "email" and not is_validated %}
+
+<input class="inline-editable"
+       type="email"
+       name="email"
+       placeholder="Email"
+       required
+       minlength="3"
+       maxlength="128"
+       aria-label="Email"
+       hx-post="/users/validate/email"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="email-helper"
+       value="{{ value }}" />
+<small id="email-helper"
+       hx-swap-oob="true">Email already exists or email is invalid</small>
+
+{% elif field == "password" and is_validated %}
+
+<input class="inline-editable"
+       type="password"
+       name="password"
+       placeholder="Password"
+       required
+       minlength="8"
+       maxlength="64"
+       aria-label="Password"
+       hx-post="/users/validate/password"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="false"
+       value="{{ value }}" />
+<small id="password-helper"
+       hx-swap-oob="true"></small>
+
+{% elif field == "password" and not is_validated %}
+
+<input class="inline-editable"
+       type="password"
+       name="password"
+       placeholder="Password"
+       required
+       minlength="8"
+       maxlength="64"
+       aria-label="Password"
+       hx-post="/users/validate/password"
+       hx-target="this"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       aria-invalid="true"
+       aria-describedby="password-helper"
+       value="{{ value }}" />
+<small id="password-helper"
+       hx-swap-oob="true">Password must have: <br>* Atleast 8 characters<br>* A lowercase letter<br>* An uppercase Letter<br>* A number<br>* A special character</small>
+
+{% endif %}
+
+<!-- Keep the sabe buttondisabled until ready_to_submit -->
+<button type="submit"
+        class="primary submit-btn"
+        id="submit-btn"
+        hx-swap-oob="true"
+        {% if not ready_to_submit %}disabled{% endif %}
+        _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Save</button>

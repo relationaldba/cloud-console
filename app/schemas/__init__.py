@@ -1,10 +1,11 @@
-from app.schemas.auth import Token, TokenData
+from app.schemas.auth import (
+    Token,
+    TokenData,
+)
 from app.schemas.cloudproviders import (
-    CloudProviderCreate,
     CloudProviderMiniResponse,
     CloudProviderResponse,
     CloudProviderUpdate,
-    CloudProviderValidate,
 )
 from app.schemas.deployments import (
     DeploymentCreate,
@@ -12,22 +13,11 @@ from app.schemas.deployments import (
     DeploymentUpdate,
     DeploymentValidate,
 )
-from app.schemas.environment_details import (
-    EnvironmentDetailCreate,
-    EnvironmentDetailResponse,
-    EnvironmentDetailUpdate,
-    EnvironmentDetailValidate,
-)
 from app.schemas.environments import (
     EnvironmentCreate,
     EnvironmentResponse,
     EnvironmentUpdate,
     EnvironmentValidate,
-)
-from app.schemas.product_details import (
-    ProductDetailCreate,
-    ProductDetailResponse,
-    ProductDetailUpdate,
 )
 from app.schemas.products import (
     ProductCreate,
@@ -35,26 +25,14 @@ from app.schemas.products import (
     ProductUpdate,
     ProductValidate,
 )
-from app.schemas.service_details import (
-    ServiceDetailCreate,
-    ServiceDetailResponse,
-    ServiceDetailUpdate,
-)
-from app.schemas.stack_details import (
-    StackDetailCreate,
-    StackDetailResponse,
-    StackDetailUpdate,
+from app.schemas.stack_properties import (
+    StackPropertyCreate,
+    StackPropertyResponse,
+    StackPropertyUpdate,
 )
 from app.schemas.stacks import (
-    StackCreate,
     StackResponse,
     StackUpdate,
-    StackValidate,
-)
-from app.schemas.teams import (
-    TeamCreate,
-    TeamResponse,
-    TeamUpdate,
 )
 from app.schemas.users import (
     UserAuthenticated,
@@ -62,51 +40,74 @@ from app.schemas.users import (
     UserLogin,
     UserResponse,
     UserUpdate,
+    UserValidate,
 )
 
-__all__ = [
+__all__ = []
+
+# auth
+__all__ += [
     "Token",
     "TokenData",
+]
+
+# users
+__all__ += [
     "UserAuthenticated",
     "UserCreate",
     "UserLogin",
     "UserResponse",
     "UserUpdate",
+    "UserValidate",
+]
+
+# cloudproviders
+__all__ += [
+    "CloudProviderResponse",
+    "CloudProviderUpdate",
+    "CloudProviderMiniResponse",
+]
+
+# deployments
+__all__ += [
     "DeploymentCreate",
     "DeploymentResponse",
     "DeploymentUpdate",
     "DeploymentValidate",
+]
+
+# environments
+__all__ += [
     "EnvironmentCreate",
     "EnvironmentResponse",
     "EnvironmentUpdate",
     "EnvironmentValidate",
-    "EnvironmentDetailCreate",
-    "EnvironmentDetailResponse",
-    "EnvironmentDetailUpdate",
-    "EnvironmentDetailValidate",
+]
+
+# products
+__all__ += [
     "ProductCreate",
     "ProductResponse",
     "ProductUpdate",
     "ProductValidate",
-    "ProductDetailCreate",
-    "ProductDetailResponse",
-    "ProductDetailUpdate",
-    "ServiceDetailCreate",
-    "ServiceDetailResponse",
-    "ServiceDetailUpdate",
-    "StackCreate",
+]
+
+# product_properties
+__all__ += [
+    # "ProductPropertyResponse",
+    # "ProductPropertyCreate",
+    # "ProductPropertyUpdate",
+]
+
+# stacks
+__all__ += [
     "StackResponse",
     "StackUpdate",
-    "StackValidate",
-    "StackDetailCreate",
-    "StackDetailResponse",
-    "StackDetailUpdate",
-    "CloudProviderCreate",
-    "CloudProviderResponse",
-    "CloudProviderUpdate",
-    "CloudProviderValidate",
-    "CloudProviderMiniResponse",
-    "TeamCreate",
-    "TeamResponse",
-    "TeamUpdate",
+]
+
+# stack_properties
+__all__ += [
+    "StackPropertyResponse",
+    "StackPropertyCreate",
+    "StackPropertyUpdate",
 ]

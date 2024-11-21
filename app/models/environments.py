@@ -14,7 +14,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 if TYPE_CHECKING:
-    # from .environment_details import EnvironmentDetail
     from .users import User
     from .cloudproviders import CloudProvider
     from .deployments import Deployment
@@ -87,16 +86,17 @@ class Environment(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+    deleted_at: Mapped[datetime] = mapped_column(
+        name="deleted_at",
+        type_=TIMESTAMP(timezone=True),
+        nullable=True,
+    )
     user: Mapped["User"] = relationship(
         back_populates="environments",
     )
-    cloudprovider: Mapped[List["CloudProvider"]] = relationship(
+    cloudprovider: Mapped["CloudProvider"] = relationship(
         back_populates="environments",
     )
-    deployments: Mapped["Deployment"] = relationship(
+    deployments: Mapped[List["Deployment"]] = relationship(
         back_populates="environment",
     )
-    # environment_details: Mapped[List["EnvironmentDetail"]] = relationship(
-    #     back_populates="environment",
-    #     cascade="all, delete-orphan",
-    # )

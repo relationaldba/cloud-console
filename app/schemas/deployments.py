@@ -1,25 +1,32 @@
 from datetime import datetime
+from typing import Annotated, List
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-from app.schemas.environments import EnvironmentResponse
-from app.schemas.stacks import StackResponse
+from .product_properties import ProductPropertyResponse, ProductPropertyCreate
+from .stack_properties import StackPropertyCreate, StackPropertyResponse
 
 
 class DeploymentBase(BaseModel):
     """The base model for the Deployment object"""
 
     model_config = ConfigDict(
-        str_min_length=1,
+        str_min_length=3,
         str_max_length=256,
         str_strip_whitespace=True,
     )
 
-    name: str
-    cloudprovider_id: int
-    stack_id: int
+    name: Annotated[
+        str,
+        StringConstraints(strip_whitespace=True, to_upper=True),
+    ]
+    description: str | None = Field(default=None, min_length=0)
+    # status: str | None = Field(default="QUEUED")
     environment_id: int
-    status: str | None = Field(default="pending")
+    stack_id: int
+    product_id: int
+    stack_properties: List[StackPropertyCreate] | None = []
+    product_properties: List[ProductPropertyCreate] | None = []
 
 
 class DeploymentCreate(DeploymentBase):
@@ -34,25 +41,33 @@ class DeploymentUpdate(DeploymentBase):
     pass
 
 
-class DeploymentResponse(DeploymentBase):
+class DeploymentResponse(BaseModel):
     """The model for reading the Deployment object"""
 
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    name: str
+    description: str
+    status: str
     created_at: datetime
     updated_at: datetime
-
-    stack: StackResponse
-    environment: EnvironmentResponse
+    deleted_at: datetime | None
+    created_by: int
+    environment_id: int
+    stack_id: int
+    product_id: int
+    stack_properties: list[StackPropertyResponse] | None
+    product_properties: list[ProductPropertyResponse] | None
 
 
 class DeploymentValidate(BaseModel):
     """The base model for the validation of the Deployment object"""
 
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+    )
     name: str | None = None
-    cloudprovider: str | None = None
-    aws_account_id: str | None = None
-    aws_access_key_id: str | None = None
-    aws_secret_access_key: str | None = None
-    aws_region: str | None = None
+    environment_id: int | None = None
+    stack_id: int | None = None
+    product_id: int | None = None

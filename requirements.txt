@@ -17,3 +17,7 @@ boto3
 
 paramiko
 fabric
+configparser
+
+# CamelCase to snake_case inflection.underscore
+inflection

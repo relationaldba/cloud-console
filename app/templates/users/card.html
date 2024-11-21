@@ -1,0 +1,22 @@
+<article class="card"
+         id='{{ "card-users-" ~ user.id }}'
+         hx-get='{{ "/users/" ~ user.id }}'
+         hx-target="body"
+         hx-swap="beforeend">
+
+  <div class="card-content">
+
+    <div class="card-body">
+
+      <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+      <small>{{ user.email }}</small>
+      <small>Active: {{ user.active }}</small>
+      <small>Last Login: {% if user.last_login_at %}{{ user.last_login_at.strftime('%Y-%m-%d %H:%M %Z') }}{% endif %}</small>
+
+    </div>
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+</article>

@@ -1,4 +1,4 @@
-<article class="card card-products"
+<article class="card"
          id='{{ "card-products-" ~ product.id }}'
          hx-get='{{ "/products/" ~ product.id }}'
          hx-target="body"
@@ -7,12 +7,16 @@
   <div class="card-content">
 
     <div class="card-body">
-      <h4>{{ product.name }}</h4>
-      <small>{{ product.version }}</small>
+      <hgroup>
+        <h4>{{ product.name }}</h4>
+        <p>{{ product.version }}</p>
+      </hgroup>
+      <small>{{ product.repository_url }}</small>
+
     </div>
-    <!-- <div class="card-footer">
-      <i
-        class="bi bi-info-circle-fill card-icon icon-secondary"></i>
-    </div> -->
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
   </div>
 </article>

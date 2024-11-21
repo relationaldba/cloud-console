@@ -1,0 +1,233 @@
+<dialog id="product-detail-modal"
+        class="modal"
+        open=""
+        _="on closeModal add .closing then wait for animationend then remove me">
+
+  <div class="modal-underlay"
+       _="on click trigger closeModal"></div>
+
+  <article class="modal-content">
+
+    <form id="product-detail-form"
+          {% if action == "read" %}
+          hx-get="/products/{{ product.id }}/edit"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#product-detail-modal"
+          {% elif action == "create" %}
+          hx-post="/products"
+          hx-validate="true"
+          hx-trigger="submit"
+          hx-swap="beforeend"
+          hx-target=".content-body"
+          {% elif action == "update" %}
+          hx-put="/products/{{ product.id }}"
+          hx-trigger="submit"
+          hx-swap="outerHTML"
+          hx-target="#product-detail-modal"
+          {% endif %}
+          hx-ext="json-enc">
+
+      <div class="modal-body">
+
+        <i class="bi bi-x-circle-fill modal-icon icon-secondary"
+           _="on click trigger closeModal"></i>
+
+        <h4>
+          Product Details
+        </h4>
+
+        <label for="name">Product Name <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="name"
+                 placeholder="Product Name"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Product Name"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/products/validate/name"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ product.name }}"
+                 readonly
+                 {% endif %} />
+          <small id="name-helper"></small>
+        </label>
+
+        <label for="version">Version <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="version"
+                 placeholder="Product Version e.g. 2024.11.R01"
+                 required
+                 minlength="3"
+                 maxlength="16"
+                 aria-label="Product Version"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/products/validate/version"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ product.version }}"
+                 readonly
+                 {% endif %} />
+          <small id="version-helper"></small>
+        </label>
+
+        <label for="repository_url">Docker repository URL <sup><small><i class="bi bi-asterisk icon-warning"></i></small></sup>
+          <input class="inline-editable"
+                 type="text"
+                 name="repository_url"
+                 placeholder="Docker Repository URL"
+                 required
+                 minlength="3"
+                 maxlength="256"
+                 aria-label="Docker Repository URL"
+                 hx-ext="json-enc"
+                 {% if action == "create" %}
+                 hx-post="/products/validate/repository_url"
+                 hx-target="this"
+                 hx-swap="outerHTML"
+                 {% else %}
+                 value="{{ product.repository_url }}"
+                 readonly
+                 {% endif %} />
+          <small id="repository_url-helper"></small>
+        </label>
+
+        <label for="repository_username">Repository Username
+          <input class="inline-editable"
+                 type="text"
+                 name="repository_username"
+                 placeholder="Repository Username"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Repository Username"
+                 hx-ext="json-enc"
+                 {% if action == "read" %}
+                 value="{{ product.repository_username }}"
+                 readonly
+                 {% elif action == "update" %}
+                 value="{{ product.repository_username }}"
+                 {% endif %} />
+          <small id="repository_username-helper">Leave blank if the repository is public or authentication is not required</small>
+        </label>
+
+        <label for="repository_password">Repository Password or Access Token
+          <input class="inline-editable"
+                 type="password"
+                 name="repository_password"
+                 placeholder="Repository Password or Access Token"
+                 required
+                 minlength="3"
+                 maxlength="64"
+                 aria-label="Repository Password or Access Token"
+                 hx-ext="json-enc"
+                 {% if action == "read" %}
+                 value="{{ product.repository_password }}"
+                 readonly
+                 {% elif action == "update" %}
+                 value="{{ product.repository_password }}"
+                 {% endif %} />
+          <small id="repository_password-helper">Leave blank if the repository is public or authentication is not required</small>
+        </label>
+
+        <label for="active">Active &nbsp;&nbsp;
+          <input name="active"
+                 id="active"
+                 aria-label="Product Active"
+                 type="checkbox"
+                 {% if action == "read" or action == "create" %}disabled{% endif %}
+                 {% if product is undefined or product.active %}checked{% endif %} />
+        </label>
+
+        {% if action == "read" or action == "update" %}
+        <label>Created By &nbsp;{{ product.creator }}</label>
+        <label>Created Date &nbsp;{{ product.created_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        <label>Updated Date &nbsp;{{ product.updated_at.strftime('%Y-%m-%d %H:%M %Z') }}</label>
+        {% endif %}
+
+        <label class="error-message"
+               id="error-message"
+               style="display: none;">
+        </label>
+
+        <label class="success-message"
+               id="success-message"
+               style="display: none;">
+        </label>
+
+        <label class="info-message"
+               id="info-message"
+               style="display: none;">
+        </label>
+      </div>
+
+      <div class="modal-footer">
+
+        {% if action == "read" %}
+        <button type="button"
+                class="secondary outline delete-btn"
+                id="delete-btn"
+                hx-delete="/products/{{ product.id }}"
+                hx-swap="outerHTML swap:1s"
+                hx-target="#card-products-{{ product.id }}"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Delete</button>
+        <button type="button"
+                class="primary edit-btn"
+                id="edit-btn"
+                hx-get="/products/{{ product.id }}/edit"
+                hx-swap="outerHTML"
+                hx-target="#product-detail-modal"
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Edit</button>
+        {% elif action == "update" or action == "create" %}
+        <button type="submit"
+                class="primary submit-btn"
+                id="submit-btn"
+                {% if action == "create" and not ready_to_submit %}disabled{% endif %}
+                _="on htmx:beforeRequest set @aria-busy to 'true' then set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @aria-busy then remove @disabled">Save</button>
+        {% endif %}
+        <button type="button"
+                class="outline cancel-btn"
+                id="cancel-btn"
+                _="on click trigger closeModal end on htmx:beforeRequest set @disabled to 'true' on htmx:afterRequest or htmx:responseError remove @disabled">Cancel</button>
+      </div>
+
+    </form>
+  </article>
+</dialog>
+
+<!-- Send an out of band update to the card with the updated contents -->
+
+{% if action == "read" %}
+
+<article class="card"
+         id='{{ "card-products-" ~ product.id }}'
+         hx-get='{{ "/products/" ~ product.id }}'
+         hx-target="body"
+         hx-swap="beforeend"
+         hx-swap-oob="true">
+
+  <div class="card-content">
+
+    <div class="card-body">
+      <hgroup>
+        <h4>{{ product.name }}</h4>
+        <p>{{ product.version }}</p>
+      </hgroup>
+      <small>{{ product.repository_url }}</small>
+
+    </div>
+
+    <div class="card-footer">
+      <i class="bi bi-info-circle-fill card-icon icon-secondary"></i>
+    </div>
+  </div>
+</article>
+{% endif %}

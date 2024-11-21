@@ -2,11 +2,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    TIMESTAMP,
-    Boolean,
     ForeignKey,
     Integer,
     String,
+    TIMESTAMP,
     func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -14,13 +13,14 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 if TYPE_CHECKING:
+    from .deployments import Deployment
     from .products import Product
 
 
-class ProductDetail(Base):
-    """ORM Class that represents the `product_details` table"""
+class ProductProperty(Base):
+    """ORM Class that represents the `product_properties` table"""
 
-    __tablename__ = "product_details"
+    __tablename__ = "product_properties"
 
     id: Mapped[int] = mapped_column(
         name="id",
@@ -36,15 +36,8 @@ class ProductDetail(Base):
     )
     value: Mapped[str] = mapped_column(
         name="value",
-        type_=String(512),
+        type_=String,
         nullable=False,
-    )
-    active: Mapped[bool] = mapped_column(
-        name="active",
-        type_=Boolean,
-        nullable=False,
-        default=True,
-        server_default="true",
     )
     created_at: Mapped[datetime] = mapped_column(
         name="created_at",
@@ -59,13 +52,25 @@ class ProductDetail(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
-    # product_id: Mapped[int] = mapped_column(
-    #     ForeignKey(
-    #         column="products.id", name="fk_product_details_products", ondelete="CASCADE"
-    #     ),
-    #     name="product_id",
-    #     nullable=False,
-    # )
-    # product: Mapped["Product"] = relationship(
-    #     back_populates="product_details",
-    # )
+    product_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            column="products.id",
+            name="fk_product_properties_products",
+            ondelete="CASCADE",
+        ),
+        name="product_id",
+        nullable=False,
+    )
+    product: Mapped["Product"] = relationship()
+    deployment_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            column="deployments.id",
+            name="fk_product_properties_deployments",
+            ondelete="CASCADE",
+        ),
+        name="deployment_id",
+        nullable=False,
+    )
+    deployment: Mapped["Deployment"] = relationship(
+        back_populates="product_properties",
+    )

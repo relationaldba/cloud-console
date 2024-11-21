@@ -3,7 +3,7 @@
   <hgroup>
 
     <h3>Environments</h3>
-    <p>Create and Manage your Environments. Environments can be added to a Stack and deployed on the cloud platform of your choice.</p>
+    <p>Create and manage your Environments. An Environment is a cloud platform where infrastructure can be deployed.</p>
   </hgroup>
 
   <article class="card card-add"
@@ -52,4 +52,54 @@
   <label class="error-message"
          id="error-message"
          style="display: none;"></label>
+</div>
+
+<!-- sidenav -->
+
+<div class="sidenav-body"
+     id="sidenav-body"
+     hx-swap-oob="true">
+
+  <div class="sidenav-item sidenav-item-home"
+       hx-get="/"
+       hx-trigger="click"
+       hx-swap="outerHTML"
+       hx-target="html">Home</div>
+
+  <div class="sidenav-item sidenav-item-deployments"
+       hx-get="/deployments"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Deployments</div>
+
+  <div class="sidenav-item sidenav-item-stacks"
+       hx-get="/stacks"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Stacks</div>
+
+  <div class="sidenav-item sidenav-item-environments sidenav-item-active"
+       hx-get="/environments"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Environments</div>
+
+  <div class="sidenav-item sidenav-item-products"
+       hx-get="/products"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Products</div>
+
+  <div class="sidenav-item sidenav-item-cloudproviders"
+       hx-get="/cloudproviders"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Cloud Providers</div>
+
+  <div class="sidenav-item sidenav-item-users"
+       hx-get="/users"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Users</div>
+
 </div>

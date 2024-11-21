@@ -1,23 +1,12 @@
 <div class="content-header">
 
-  <h3>Products</h3>
+  <hgroup>
 
-  <!-- <div class="content-action">
-    <i class="bi bi-x-circle-fill content-icon"
-       _="on click trigger closeModal"></i>
-  </div> -->
+    <h3>Products</h3>
+    <p>Create and manage your Products. A Product represents a docker image of your application that can be instantiated on a Stack.</p>
+  </hgroup>
 
-  <p>Create and Manage your Products. Products can be added to a Stack and deployed on the cloud platform of your
-    choice.</p>
-  <small>Showing {{ products|length }} products. </small>
-
-</div>
-
-<hr />
-
-<div class="content-body">
-
-  <article class="card card-products card-add-products"
+  <article class="card card-add"
            hx-get="/products/create"
            hx-target=".content-body"
            hx-swap="beforeend">
@@ -31,7 +20,32 @@
     </div>
   </article>
 
-  {% for product in products %} {% include "products/card.html" %} {% endfor %}
+</div>
+
+<hr />
+
+<div class="content-options">
+  <small>Showing {{ products|length }} products. </small>
+  <label for="active"
+         hx-get="/products"
+         hx-trigger="click"
+         hx-swap="innerHTML"
+         hx-target=".content-root">
+    <input type="checkbox"
+           id="active"
+           name="active"
+           checked
+           disabled>Show Inactive</label>
+</div>
+
+<div class="content-body">
+
+  {% for product in products %}
+
+  {% include "products/card.html" %}
+
+  {% endfor %}
+
 </div>
 
 <div class="content-footer">
@@ -39,4 +53,54 @@
   <label class="error-message"
          id="error-message"
          style="display: none;"></label>
+</div>
+
+<!-- sidenav -->
+
+<div class="sidenav-body"
+     id="sidenav-body"
+     hx-swap-oob="true">
+
+  <div class="sidenav-item sidenav-item-home"
+       hx-get="/"
+       hx-trigger="click"
+       hx-swap="outerHTML"
+       hx-target="html">Home</div>
+
+  <div class="sidenav-item sidenav-item-deployments"
+       hx-get="/deployments"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Deployments</div>
+
+  <div class="sidenav-item sidenav-item-stacks"
+       hx-get="/stacks"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Stacks</div>
+
+  <div class="sidenav-item sidenav-item-environments"
+       hx-get="/environments"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Environments</div>
+
+  <div class="sidenav-item sidenav-item-products sidenav-item-active"
+       hx-get="/products"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Products</div>
+
+  <div class="sidenav-item sidenav-item-cloudproviders"
+       hx-get="/cloudproviders"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Cloud Providers</div>
+
+  <div class="sidenav-item sidenav-item-users"
+       hx-get="/users"
+       hx-trigger="click"
+       hx-swap="innerHTML"
+       hx-target=".content-root">Users</div>
+
 </div>
