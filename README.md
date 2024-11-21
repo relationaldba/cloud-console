@@ -78,3 +78,4 @@ The API documentation is available at `<http://localhost:8000/docs>`.
 * Add docstrings to all Classes and Functions
 * Create user manual for the application
 * Optimize the Docker Image size using multi stage build process
+
